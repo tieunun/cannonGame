@@ -39,12 +39,18 @@ void Ground::generateHills() {
 
 void Ground::setBounds(){
 	
-	while( hillPoints[startPoint].x < offsetX-winSize.width*4/8/layer->getScale() )
+	float min = offsetX-winSize.width*12/8/layer->getScale();
+	float max = offsetX+winSize.width*12/8/layer->getScale();
+	
+	//Reverse direction
+	if( hillPoints[startPoint].x > min ) startPoint = 0;
+	
+	while( hillPoints[startPoint].x < min )
 		startPoint++;
 
 	endPoint = startPoint;
 		
-	while( hillPoints[endPoint].x < offsetX+winSize.width*12/8/layer->getScale() )
+	while( hillPoints[endPoint].x < max )
 		endPoint++;
 
 	setVertex();
@@ -379,12 +385,10 @@ Color4F Ground::randomBrightColor()
 
 void Ground::setOffsetX( int offset )
 {
-	if(offset > 0 )	this->offsetX = offset;
-	else this->offsetX = 0;
+	this->offsetX += offset;
 }
 
 void Ground::setOffsetXTexture( int offset )
 {
-	if(offset > 0 )	this->offsetXTexture = offset;
-	else this->offsetXTexture = 0;
+	this->offsetXTexture += offset;
 }

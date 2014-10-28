@@ -52,8 +52,14 @@ void GameLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, coco
 	for( auto touch : touches )
 	{
 		Point location = touch->getLocationInView();
-		location = Director::sharedDirector()->convertToGL(location);
-
+		location = Director::getInstance()->convertToGL(location);
+		
+		if( location.x < 500 ) {
+			if( ground ){ ground->setOffsetX( -100 ); }
+		}
+		else{
+			if( ground ){ ground->setOffsetX( 100 ); }
+		};
 	}		
 }
 
@@ -62,8 +68,7 @@ void GameLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, coco
 {
 
 	Point location = touches[0]->getLocationInView();
-	location = Director::sharedDirector()->convertToGL(location);
-	
+	location = Director::getInstance()->convertToGL(location);
 }
 
 void GameLayer::tick(float dt){
