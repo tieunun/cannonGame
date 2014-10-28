@@ -60,6 +60,13 @@ void GameLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, coco
 		else{
 			if( ground ){ ground->setOffsetX( 100 ); }
 		};
+		
+		if( location.y < 500 ) {
+			if( ground ){ ground->setOffsetY( -5 ); }
+		}
+		else{
+			if( ground ){ ground->setOffsetY( 5 ); }
+		};
 	}		
 }
 

@@ -16,7 +16,7 @@ private:
 	Size winSize;
 	
 	// OFFSETS TODO!
-	int offsetX, offsetXTexture, hillPointsCount;
+	int offsetX, offsetY, offsetXTexture, hillPointsCount;
 	
 	// USED TO DETERMINE HOW MUCH SHOULD BE SHOWN
 	int startPoint, endPoint, prevStartPoint, prevEndPoint;
@@ -55,6 +55,7 @@ public:
 		noiseSprite = NULL;
 		
 		offsetX = 0;
+		offsetY = 0;
 		offsetXTexture = 0;
 		hillPointsCount = 0;
 		startPoint = 0;
@@ -88,6 +89,7 @@ public:
 	
 	//GETTERS SETTERS
 	void setOffsetX( int offset );
+	void setOffsetY( int offset );
 	void setOffsetXTexture( int offset );
 
 };

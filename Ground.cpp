@@ -70,9 +70,9 @@ void Ground::setVertex()
 	hillVerticesCount = 0;
 	borderVerticesCount = 0;
 	Point p0, p1, pt0, pt1;
-	p0 = Point( (hillPoints[startPoint].x - offsetX) * layer->getScale() , hillPoints[startPoint].y  * layer->getScale() ) ;
+	p0 = Point( (hillPoints[startPoint].x - offsetX) * layer->getScale() , (hillPoints[startPoint].y-offsetY)  * layer->getScale() ) ;
 	for (int i = startPoint+1; i < endPoint+1; i++) {
-		p1 =Point( ( hillPoints[i].x - offsetX )  * layer->getScale() , hillPoints[i].y  * layer->getScale() );
+		p1 =Point( ( hillPoints[i].x - offsetX )  * layer->getScale() , (hillPoints[i].y-offsetY)  * layer->getScale() );
  
 		// triangle strip between p0 and p1
 		int hSegments = floorf((p1.x-p0.x)/hillSegmentWidth);
@@ -146,7 +146,7 @@ void Ground::drawBox2DGround(){
 
 	for(int i = startPoint+1 ; i < endPoint ; ++i) {    
 		
-		ccDrawLine( Point( (hillPoints[i-1].x-offsetX) * layer->getScale() , hillPoints[i-1].y * layer->getScale() ) , Point( (hillPoints[i].x-offsetX) * layer->getScale() , hillPoints[i].y * layer->getScale() ) );    
+		ccDrawLine( Point( (hillPoints[i-1].x-offsetX) * layer->getScale() , (hillPoints[i-1].y-offsetY) * layer->getScale() ) , Point( (hillPoints[i].x-offsetX) * layer->getScale() , (hillPoints[i].y-offsetY) * layer->getScale() ) );    
 			
 	}
 	
@@ -387,8 +387,16 @@ Color4F Ground::randomBrightColor()
 void Ground::setOffsetX( int offset )
 {
 	if( (offsetX + offset) <  hillPoints[0].x ) this->offsetX = hillPoints[0].x;
-	else if( (offsetX + offset) > hillPoints[ maxHillPoints - 2 ].x ) this->offsetX = hillPoints[ maxHillPoints - 2 ].x;
+	else if( (offsetX + offset) > hillPoints[ maxHillPoints - 10 ].x ) this->offsetX = hillPoints[ maxHillPoints - 10 ].x;
 	else this->offsetX += offset;
+}
+
+
+void Ground::setOffsetY( int offset )
+{
+	if( (offsetY + offset) <  -250 ) this->offsetY = -250;
+	else if( (offsetY + offset) > 1000 ) this->offsetY = 1000;
+	else this->offsetY += offset;
 }
 
 void Ground::setOffsetXTexture( int offset )
