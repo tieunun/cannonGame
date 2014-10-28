@@ -19,12 +19,10 @@ void Ground::initGround(){
 
 void Ground::generateHills() {
 	
-	float x = 0;
+	float x = -3*winSize.width/2;
 	float y = winSize.height / 4;
 
-	hillPoints[0] = Point( -3*winSize.width/4 , winSize.height );
-
-	for(int i = 1; i < maxHillPoints; ++i ) {
+	for(int i = 0; i < maxHillPoints; ++i ) {
 		hillPoints[i] = Point(x, y);
 		x += winSize.width/4;
 		y = (rand() % (int) winSize.height/2 );
@@ -52,6 +50,9 @@ void Ground::setBounds(){
 		
 	while( hillPoints[endPoint].x < max )
 		endPoint++;
+
+	if( endPoint > maxHillPoints -2 ) endPoint = maxHillPoints - 2 ;
+	if( startPoint > maxHillPoints -2 ) startPoint = maxHillPoints - 2 ;
 
 	setVertex();
 	setBox2DBody();
@@ -87,14 +88,14 @@ void Ground::setVertex()
 			borderPoints[ borderVerticesCount++ ] = pt1;
  
 			vertexPoints[ hillVerticesCount ] = Point(pt0.x, 0 );
-			textureCoords[ hillVerticesCount++ ] = Point((pt0.x-offsetXTexture)/512, 1.0f );
+			textureCoords[ hillVerticesCount++ ] = Point((pt0.x-offsetXTexture)/textureWidth, 1.0f );
 			vertexPoints[ hillVerticesCount ] = Point(pt1.x, 0 );
-			textureCoords[ hillVerticesCount++ ] = Point((pt1.x-offsetXTexture)/512, 1.0f );
+			textureCoords[ hillVerticesCount++ ] = Point((pt1.x-offsetXTexture)/textureWidth, 1.0f );
  
 			vertexPoints[ hillVerticesCount ] = Point(pt0.x, pt0.y);
-			textureCoords[ hillVerticesCount++ ] = Point((pt0.x-offsetXTexture)/512, 0);
+			textureCoords[ hillVerticesCount++ ] = Point((pt0.x-offsetXTexture)/textureWidth, 0);
 			vertexPoints[ hillVerticesCount ] = Point(pt1.x, pt1.y);
-			textureCoords[ hillVerticesCount++ ] = Point((pt1.x-offsetXTexture)/512, 0);
+			textureCoords[ hillVerticesCount++ ] = Point((pt1.x-offsetXTexture)/textureWidth, 0);
  
 			pt0 = pt1;
 		}
@@ -143,7 +144,7 @@ void Ground::drawBox2DGround(){
 	glLineWidth(10.0f);
 	ccDrawColor4F( 0.5, 0.5, 0.5, 0.5 );
 
-	for(int i = startPoint ; i < endPoint ; ++i) {    
+	for(int i = startPoint+1 ; i < endPoint ; ++i) {    
 		
 		ccDrawLine( Point( (hillPoints[i-1].x-offsetX) * layer->getScale() , hillPoints[i-1].y * layer->getScale() ) , Point( (hillPoints[i].x-offsetX) * layer->getScale() , hillPoints[i].y * layer->getScale() ) );    
 			
@@ -385,7 +386,9 @@ Color4F Ground::randomBrightColor()
 
 void Ground::setOffsetX( int offset )
 {
-	this->offsetX += offset;
+	if( (offsetX + offset) <  hillPoints[0].x ) this->offsetX = hillPoints[0].x;
+	else if( (offsetX + offset) > hillPoints[ maxHillPoints - 2 ].x ) this->offsetX = hillPoints[ maxHillPoints - 2 ].x;
+	else this->offsetX += offset;
 }
 
 void Ground::setOffsetXTexture( int offset )
