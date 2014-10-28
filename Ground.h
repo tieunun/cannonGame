@@ -22,12 +22,18 @@ private:
 	int _nBorderVertices;
 	int _nHillVertices;
 	CustomCommand drawHillsCommand;
+	CustomCommand drawStripesCommand;
 	
 	b2Body * groundBody;
 	
+	//texture data
+	Sprite * noiseSprite;
+	Sprite * textureSprite;
+	int nStripes;
+	float textureWidth;
+	float textureHeight;
+	
 public:
-
-	Sprite * stripes;
 	
 	Ground( Layer * layer , b2World * world) 
 	:GameObject( layer , world, new std::string("GROUND") ) {
@@ -39,10 +45,12 @@ public:
 		endPoint = 0;
 		prevStartPoint = -1;
 		prevEndPoint = -1;
-		stripes = NULL;
+		textureSprite = NULL;
 		groundBody = NULL;
+		noiseSprite = NULL;
 	}
 	
+	void initGround();
 	void generateHills();
 	void update();
 	void setBounds();
@@ -52,6 +60,15 @@ public:
 	void setOffsetX( int offset );
 	void setOffsetXTexture( int offset );
 	void setBox2DBody();
+	
+	Texture2D * createTexture( Color4F bgColor, float textureWidth, float textureHeight, int nStripes );
+
+	void drawStripes();
+
+	Color4F randomBrightColor();
+	
+	void setTexture();
+	
 
 };
 
