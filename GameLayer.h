@@ -4,6 +4,9 @@
 #include "Box2D/Box2D.h"
 #include "cocos2d.h"
 #include "Ground.h"
+#include "Cannon.h"
+#include "Bullet.h"
+#include "BulletContactListener.h"
 
 using namespace cocos2d;
 
@@ -12,11 +15,19 @@ class GameLayer : public cocos2d::Layer
 		
 private:
 
+	b2Vec2 directionPoint;
+	
 	Size winSize;
 	
+    b2World * m_world;
+    
 	Ground * ground;
 
-    b2World * m_world;
+    Cannon * cannon;
+
+	std::vector<Bullet*> bullets;
+
+	BulletContactListener bulletContactListenerInstance;
 
 public:
 
@@ -30,6 +41,10 @@ public:
 	void initBox2D();
 	
 	void initGround();
+	
+	void initCannon();
+	
+	void createBullet();
 	
 	void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
 

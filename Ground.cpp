@@ -388,7 +388,7 @@ void Ground::setOffsetX( int offset )
 {
 	if( (offsetX + offset) <  hillPoints[0].x ) this->offsetX = hillPoints[0].x;
 	else if( (offsetX + offset) > hillPoints[ maxHillPoints - 10 ].x ) this->offsetX = hillPoints[ maxHillPoints - 10 ].x;
-	else this->offsetX += offset;
+	else this->offsetX = offset;
 }
 
 
@@ -396,7 +396,7 @@ void Ground::setOffsetY( int offset )
 {
 	if( (offsetY + offset) <  -250 ) this->offsetY = -250;
 	else if( (offsetY + offset) > 1000 ) this->offsetY = 1000;
-	else this->offsetY += offset;
+	else this->offsetY = offset;
 }
 
 void Ground::setOffsetXTexture( int offset )
