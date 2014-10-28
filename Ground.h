@@ -14,19 +14,29 @@ class Ground : public GameObject , public Node{
 private:
 	
 	Size winSize;
-	int offsetX, offsetXTexture, hillPointsCount, startPoint, endPoint, prevStartPoint, prevEndPoint;
+	
+	// OFFSETS TODO!
+	int offsetX, offsetXTexture, hillPointsCount;
+	
+	// USED TO DETERMINE HOW MUCH SHOULD BE SHOWN
+	int startPoint, endPoint, prevStartPoint, prevEndPoint;
+	
+	// USED TO DRAW TRIANGES
 	Point hillPoints[maxHillPoints];
 	Point borderPoints[maxHillPoints];
 	Point vertexPoints[maxVertexPoints];
 	Point textureCoords[maxVertexPoints];
-	int _nBorderVertices;
-	int _nHillVertices;
+	int borderVerticesCount;
+	int hillVerticesCount;
+	
+	// CUSTOM COMMANDS FOR OPENGL
 	CustomCommand drawHillsCommand;
 	CustomCommand drawStripesCommand;
 	
+	// B2GROUND BODY
 	b2Body * groundBody;
 	
-	//texture data
+	// TEXTURE
 	Sprite * noiseSprite;
 	Sprite * textureSprite;
 	int nStripes;
@@ -37,38 +47,48 @@ public:
 	
 	Ground( Layer * layer , b2World * world) 
 	:GameObject( layer , world, new std::string("GROUND") ) {
+
+		winSize = Director::getInstance()->getVisibleSize();
+		
+		textureSprite = NULL;
+		groundBody = NULL;
+		noiseSprite = NULL;
+		
 		offsetX = 0;
 		offsetXTexture = 0;
 		hillPointsCount = 0;
-		winSize = Director::getInstance()->getVisibleSize();
 		startPoint = 0;
 		endPoint = 0;
 		prevStartPoint = -1;
 		prevEndPoint = -1;
-		textureSprite = NULL;
-		groundBody = NULL;
-		noiseSprite = NULL;
+		
 	}
 	
+	//UPDATE
+	void update();
+	
+	//RANDOM GROUND GENERATION
 	void initGround();
 	void generateHills();
-	void update();
+	
+	//TRIANGLES
 	void setBounds();
 	void setVertex();
 	void drawHills();
+
+	//B2BODY
+	void setBox2DBody();
 	void drawBox2DGround();
+	
+	//TEXTURING
+	void setTexture();
+	Color4F randomBrightColor();
+	Texture2D * createTexture( Color4F bgColor, float textureWidth, float textureHeight, int nStripes );
+	void drawTexture();
+	
+	//GETTERS SETTERS
 	void setOffsetX( int offset );
 	void setOffsetXTexture( int offset );
-	void setBox2DBody();
-	
-	Texture2D * createTexture( Color4F bgColor, float textureWidth, float textureHeight, int nStripes );
-
-	void drawStripes();
-
-	Color4F randomBrightColor();
-	
-	void setTexture();
-	
 
 };
 

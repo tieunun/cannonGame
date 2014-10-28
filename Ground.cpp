@@ -1,6 +1,16 @@
 #include "Ground.h"
 
-USING_NS_CC;
+using namespace cocos2d;
+
+// UPDATING
+
+void Ground::update(){
+	drawHillsCommand.init( layer->getGlobalZOrder() );
+	drawHillsCommand.func = CC_CALLBACK_0( Ground::drawHills , this );
+	Director::getInstance()->getRenderer()->addCommand(&drawHillsCommand);	
+}
+
+// RANDOM GROUND GENERATING
 
 void Ground::initGround(){
 	setTexture();
@@ -8,7 +18,6 @@ void Ground::initGround(){
 }
 
 void Ground::generateHills() {
-	
 	
 	float x = 0;
 	float y = winSize.height / 4;
@@ -24,18 +33,10 @@ void Ground::generateHills() {
 	
 	setBounds();
 	setBox2DBody();
-	
 }
- 
-void Ground::update(){
-	
-	drawHillsCommand.init( layer->getGlobalZOrder() );
-	drawHillsCommand.func = CC_CALLBACK_0( Ground::drawHills , this );
-	auto renderer = Director::getInstance()->getRenderer();
-	renderer->addCommand(&drawHillsCommand);
-	
-}
- 
+
+// TRIANGLE DRAWING 
+
 void Ground::setBounds(){
 	
 	while( hillPoints[startPoint].x < offsetX-winSize.width*4/8/layer->getScale() )
@@ -59,11 +60,11 @@ void Ground::setVertex()
 	float minY = 0;
 	
 	// vertices for visible area
-	_nHillVertices = 0;
-	_nBorderVertices = 0;
+	hillVerticesCount = 0;
+	borderVerticesCount = 0;
 	Point p0, p1, pt0, pt1;
 	p0 = Point( (hillPoints[startPoint].x - offsetX) * layer->getScale() , hillPoints[startPoint].y  * layer->getScale() ) ;
-	for (int i=startPoint+1; i<endPoint+1; i++) {
+	for (int i = startPoint+1; i < endPoint+1; i++) {
 		p1 =Point( ( hillPoints[i].x - offsetX )  * layer->getScale() , hillPoints[i].y  * layer->getScale() );
  
 		// triangle strip between p0 and p1
@@ -73,21 +74,21 @@ void Ground::setVertex()
 		float ymid = (p0.y + p1.y) / 2;
 		float ampl = (p0.y - p1.y) / 2;
 		pt0 = p0;
-		borderPoints[_nBorderVertices++] = pt0;
+		borderPoints[ borderVerticesCount++ ] = pt0;
 		for (int j=1; j<hSegments+1; j++) {
 			pt1.x = p0.x + j*dx;
 			pt1.y = ymid + ampl * cosf(da*j);
-			borderPoints[_nBorderVertices++] = pt1;
+			borderPoints[ borderVerticesCount++ ] = pt1;
  
-			vertexPoints[_nHillVertices] = Point(pt0.x, 0 );
-			textureCoords[_nHillVertices++] = Point((pt0.x-offsetXTexture)/512, 1.0f );
-			vertexPoints[_nHillVertices] = Point(pt1.x, 0 );
-			textureCoords[_nHillVertices++] = Point((pt1.x-offsetXTexture)/512, 1.0f );
+			vertexPoints[ hillVerticesCount ] = Point(pt0.x, 0 );
+			textureCoords[ hillVerticesCount++ ] = Point((pt0.x-offsetXTexture)/512, 1.0f );
+			vertexPoints[ hillVerticesCount ] = Point(pt1.x, 0 );
+			textureCoords[ hillVerticesCount++ ] = Point((pt1.x-offsetXTexture)/512, 1.0f );
  
-			vertexPoints[_nHillVertices] = Point(pt0.x, pt0.y);
-			textureCoords[_nHillVertices++] = Point((pt0.x-offsetXTexture)/512, 0);
-			vertexPoints[_nHillVertices] = Point(pt1.x, pt1.y);
-			textureCoords[_nHillVertices++] = Point((pt1.x-offsetXTexture)/512, 0);
+			vertexPoints[ hillVerticesCount ] = Point(pt0.x, pt0.y);
+			textureCoords[ hillVerticesCount++ ] = Point((pt0.x-offsetXTexture)/512, 0);
+			vertexPoints[ hillVerticesCount ] = Point(pt1.x, pt1.y);
+			textureCoords[ hillVerticesCount++ ] = Point((pt1.x-offsetXTexture)/512, 0);
  
 			pt0 = pt1;
 		}
@@ -108,11 +109,12 @@ void Ground::drawHills(){
 	this->getGLProgram()->use();
 	this->getGLProgram()->setUniformsForBuiltins();
 	
-	// DRAW VERTEX
-	CC_NODE_DRAW_SETUP();
-	
+	// ATTACH TEXTURE
 	if( textureSprite != NULL ) ccGLBindTexture2D( textureSprite->getTexture()->getName() );
 
+	// DRAW TRAINGLES
+	CC_NODE_DRAW_SETUP();
+	
 	GL::enableVertexAttribs( GL::VERTEX_ATTRIB_FLAG_POSITION | GL::VERTEX_ATTRIB_FLAG_TEX_COORD );
 	
 	ccDrawColor4F(1.0f, 1.0f, 1.0f, 1.0f);
@@ -120,13 +122,17 @@ void Ground::drawHills(){
 	glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, vertexPoints);
 	glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_TEX_COORD, 2, GL_FLOAT, GL_FALSE, 0, textureCoords);
 	
-	glDrawArrays( GL_TRIANGLE_STRIP , 0, (GLsizei)_nHillVertices );
+	glDrawArrays( GL_TRIANGLE_STRIP , 0, (GLsizei) hillVerticesCount );
 	
 	drawBox2DGround();
 
 }
 
+// BOX2D
+
 void Ground::drawBox2DGround(){
+
+	//DRAW BASIC LINE
 	
 	glLineWidth(10.0f);
 	ccDrawColor4F( 0.5, 0.5, 0.5, 0.5 );
@@ -137,11 +143,13 @@ void Ground::drawBox2DGround(){
 			
 	}
 	
+	//DRAW FINAL LINE
+	
 	glLineWidth(10.0f);
 	ccDrawColor4F( 1, 0.5, 0.5, 0.5 );
 
 	int prevIndex = 0;
-	for(int i = 1 ; i < _nBorderVertices-1 ; ++i) {    
+	for(int i = 1 ; i < borderVerticesCount-1 ; ++i) {    
 		
 		if( borderPoints[i].x - borderPoints[prevIndex].x > 50 )
 		{
@@ -151,18 +159,6 @@ void Ground::drawBox2DGround(){
 		
 	}
 
-}
-
-void Ground::setOffsetX( int offset )
-{
-	if(offset > 0 )	this->offsetX = offset;
-	else this->offsetX = 0;
-}
-
-void Ground::setOffsetXTexture( int offset )
-{
-	if(offset > 0 )	this->offsetXTexture = offset;
-	else this->offsetXTexture = 0;
 }
 
 void Ground::setBox2DBody() {
@@ -190,7 +186,7 @@ void Ground::setBox2DBody() {
 	
 	int prevIndex = 0;
 	int count = 0;
-	for(int i = 1 ; i < _nBorderVertices-1 ; ++i) {    
+	for(int i = 1 ; i < borderVerticesCount-1 ; ++i) {    
 		if( borderPoints[i].x - borderPoints[prevIndex].x > 50 )
 		{
 			border[count].Set( (borderPoints[i].x)/PTM_RATIO , (borderPoints[i].y)/PTM_RATIO ) ;    
@@ -205,6 +201,8 @@ void Ground::setBox2DBody() {
 	groundBody->CreateFixture(&groundFixtureDef);
 
 }
+
+// TEXTURE
 
 void Ground::setTexture() {
 
@@ -232,7 +230,7 @@ Texture2D * Ground::createTexture( Color4F bgColor, float textureWidth, float te
 		
 		//make custom openGL render
 		drawStripesCommand.init( rt->getGlobalZOrder() );
-		drawStripesCommand.func = CC_CALLBACK_0( Ground::drawStripes , this );
+		drawStripesCommand.func = CC_CALLBACK_0( Ground::drawTexture , this );
 		auto renderer = Director::getInstance()->getRenderer();
 		renderer->addCommand(&drawStripesCommand);
 
@@ -249,7 +247,7 @@ Texture2D * Ground::createTexture( Color4F bgColor, float textureWidth, float te
 }
 
 
-void Ground::drawStripes()
+void Ground::drawTexture()
 {
 
 	//INIT DRAW VARIABLES
@@ -375,4 +373,18 @@ Color4F Ground::randomBrightColor()
 			return ccc4FFromccc4B(randomColor);
 		}        
 	}
+}
+
+// GETTERS SETTERS
+
+void Ground::setOffsetX( int offset )
+{
+	if(offset > 0 )	this->offsetX = offset;
+	else this->offsetX = 0;
+}
+
+void Ground::setOffsetXTexture( int offset )
+{
+	if(offset > 0 )	this->offsetXTexture = offset;
+	else this->offsetXTexture = 0;
 }
