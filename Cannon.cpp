@@ -126,7 +126,7 @@ void Cannon::rotateBarrel( b2Vec2 clickedPoint ){
 void Cannon::shoot()
 {
 	b2Vec2 toTarget = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(11,0) ) ;
-	m_cannonFrame->ApplyLinearImpulse( b2Vec2(50*toTarget.x,50*toTarget.y), m_cannonFrame->GetWorldCenter(), NULL );
+	m_cannonFrame->ApplyLinearImpulse( b2Vec2(-50*toTarget.x,-50*toTarget.y), m_cannonFrame->GetWorldCenter(), NULL );
 }
 
 b2Vec2 Cannon::GetShootingDirection(){

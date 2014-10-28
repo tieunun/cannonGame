@@ -5,7 +5,7 @@
 
 #define maxHillPoints  1000
 #define hillSegmentWidth  10
-#define maxVertexPoints 7000
+#define maxVertexPoints 5000
 
 using namespace cocos2d;
 
@@ -75,9 +75,11 @@ public:
 	//TRIANGLES
 	void setBounds();
 	void setVertex();
+	void setSimpleVertex();
 	void drawHills();
 
 	//B2BODY
+	void setSimpleBox2DBody();
 	void setBox2DBody();
 	void drawBox2DGround();
 	

@@ -119,14 +119,10 @@ void GameLayer::tick(float dt){
 		{
 			bullets.erase(bullets.begin()+i);
 			delete bullet;
-		}
-		else{
-			if( ground ){
-				ground->setOffsetY( bullet->getMainSprite()->getPosition().y );
-				ground->setOffsetX( bullet->getMainSprite()->getPosition().y );
-			}
+			
+			this->runAction( Follow::create( cannon->getMainSprite() ,  Rect(0, 0, this->getScale()*20000, this->getScale()*1300) ));
+	
 		}
 	}
-	
 	
 }

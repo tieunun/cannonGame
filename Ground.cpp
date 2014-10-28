@@ -30,7 +30,7 @@ void Ground::generateHills() {
 	}
 	
 	setBounds();
-	setBox2DBody();
+	setSimpleBox2DBody();
 }
 
 // TRIANGLE DRAWING 
@@ -54,12 +54,47 @@ void Ground::setBounds(){
 	if( endPoint > maxHillPoints -2 ) endPoint = maxHillPoints - 2 ;
 	if( startPoint > maxHillPoints -2 ) startPoint = maxHillPoints - 2 ;
 
-	setVertex();
-	setBox2DBody();
+
+	setSimpleVertex();
+	setSimpleBox2DBody();
 
 	prevStartPoint = startPoint;
 	prevEndPoint = endPoint; 
 				
+}
+
+
+void Ground::setSimpleVertex()
+{
+	float minY = 0;
+	
+	// vertices for visible area
+	hillVerticesCount = 0;
+	borderVerticesCount = 0;
+	Point p0, p1;
+	
+	p0 = Point( (hillPoints[0].x - offsetX) , (hillPoints[0].y-offsetY)  ) ;
+
+	for (int i = 1 ; i < maxHillPoints-1 ; i++) {
+		
+		p1 =Point( ( hillPoints[i].x - offsetX )  * layer->getScale() , (hillPoints[i].y-offsetY)  * layer->getScale() );
+ 
+		vertexPoints[ hillVerticesCount ] = Point(p0.x, 0 );
+		textureCoords[ hillVerticesCount++ ] = Point((p0.x-offsetXTexture)/textureWidth, 1.0f );
+		
+		vertexPoints[ hillVerticesCount ] = Point(p1.x, 0 );
+		textureCoords[ hillVerticesCount++ ] = Point((p1.x-offsetXTexture)/textureWidth, 1.0f );
+ 
+		vertexPoints[ hillVerticesCount ] = Point(p0.x, p0.y);
+		textureCoords[ hillVerticesCount++ ] = Point((p0.x-offsetXTexture)/textureWidth, 0);
+		
+		vertexPoints[ hillVerticesCount ] = Point(p1.x, p1.y);
+		textureCoords[ hillVerticesCount++ ] = Point((p1.x-offsetXTexture)/textureWidth, 0);
+ 
+		p0 = p1;
+	}
+ 
+	
 }
 
 void Ground::setVertex()
@@ -107,9 +142,7 @@ void Ground::setVertex()
  
 void Ground::drawHills(){
 	
-	Size winSize = Director::getInstance()->getVisibleSize();
-
-	setBounds();
+	//setBounds();
 
 	// INIT OPENGL
 	this->setGLProgram(ShaderCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE));
@@ -131,7 +164,7 @@ void Ground::drawHills(){
 	
 	glDrawArrays( GL_TRIANGLE_STRIP , 0, (GLsizei) hillVerticesCount );
 	
-	drawBox2DGround();
+	//drawBox2DGround();
 
 }
 
@@ -144,13 +177,13 @@ void Ground::drawBox2DGround(){
 	glLineWidth(10.0f);
 	ccDrawColor4F( 0.5, 0.5, 0.5, 0.5 );
 
-	for(int i = startPoint+1 ; i < endPoint ; ++i) {    
+	for(int i = 1 ; i < maxHillPoints-1 ; ++i) {    
 		
 		ccDrawLine( Point( (hillPoints[i-1].x-offsetX) * layer->getScale() , (hillPoints[i-1].y-offsetY) * layer->getScale() ) , Point( (hillPoints[i].x-offsetX) * layer->getScale() , (hillPoints[i].y-offsetY) * layer->getScale() ) );    
 			
 	}
 	
-	//DRAW FINAL LINE
+	/*DRAW FINAL LINE
 	
 	glLineWidth(10.0f);
 	ccDrawColor4F( 1, 0.5, 0.5, 0.5 );
@@ -165,6 +198,42 @@ void Ground::drawBox2DGround(){
 		}
 		
 	}
+*/
+}
+
+void Ground::setSimpleBox2DBody() {
+ 
+	if(groundBody != NULL) {
+		m_world->DestroyBody(groundBody);
+	}
+ 
+	b2BodyDef bd;
+	bd.type = b2_staticBody;
+	bd.position.Set(0, 0);
+ 
+	groundBody = m_world->CreateBody(&bd);
+
+	b2ChainShape shape;
+ 
+	b2FixtureDef groundFixtureDef;
+	groundFixtureDef.density = 100;
+	
+	//set Colliding
+	groundFixtureDef.filter.categoryBits = GROUND;
+	groundFixtureDef.filter.maskBits = CANNON | BULLET;
+
+	b2Vec2 border[ maxHillPoints ];
+	
+	int prevIndex = 0;
+	int count = 0;
+	for(int i = 0 ; i < maxHillPoints-1 ; ++i) {    
+		border[i].Set( (hillPoints[i].x)/PTM_RATIO , (hillPoints[i].y)/PTM_RATIO ) ;    
+	}
+	
+	shape.CreateChain( border ,  maxHillPoints-1 );
+
+	groundFixtureDef.shape = &shape;
+	groundBody->CreateFixture(&groundFixtureDef);
 
 }
 
