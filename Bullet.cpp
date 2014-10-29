@@ -62,7 +62,7 @@ void Bullet::shoot(b2Vec2 direction, float power){
 		// SO MAX DISTANCE IS 2*PERSPECTIVEX
 		
 		float angle = atan2f(direction.y,direction.x)+M_PI;
-		float desiredV0 = sqrtf( (2*perspectiveX/PTM_RATIO)*10.0/sinf(2*angle) );
+		float desiredV0 = sqrtf( (2*perspectiveX/PTM_RATIO)*10.0/sinf(2*M_PI/4) );
 		float desiredForce = bulletBody->GetMass()*desiredV0;
 		
 		direction.Normalize();
@@ -73,17 +73,12 @@ void Bullet::shoot(b2Vec2 direction, float power){
 		ghostBody->ApplyLinearImpulse( b2Vec2(-desiredForce*direction.x, -desiredForce*direction.y), bulletBody->GetWorldCenter(), NULL );
 		
 		float v0 = bulletBody->GetLinearVelocity().Length();
-		
 		float distance = ( v0*v0*sinf( 2*angle) )/10.0;
 
 		
-		g_screenLog->log( LL_INFO , "mass = %f% ", bulletBody->GetMass()  );
 		g_screenLog->log( LL_INFO , "v0 = %f% ", v0  );
 		g_screenLog->log( LL_INFO , "Angle = %f%", angle*RADTODEG );
 		g_screenLog->log( LL_INFO , "Distance = %f%", distance );
-		g_screenLog->log( LL_INFO , "It is %f% of world length",  distance*PTM_RATIO/(worldEndX-worldStartX) );
-		g_screenLog->log( LL_INFO , "desiredV0 = %f%",  desiredV0 );
-		g_screenLog->log( LL_INFO , "desiredF = %f%",  desiredForce );
 		
 	}
 }
@@ -180,7 +175,7 @@ bool Bullet::updateSprites(){
 		}
 		else{
 	
-			if(bulletBody->GetPosition().x * PTM_RATIO > 1200 )
+			if(bulletBody->GetPosition().x * PTM_RATIO > 800 )
 				layer->runAction(cocos2d::CCFollow::create(bulletSprite,  Rect(worldStartX*layer->getScale(), worldStartX*layer->getScale(), worldEndX*layer->getScale() , worldEndX*layer->getScale() ) ));
 	
 	
@@ -202,7 +197,7 @@ bool Bullet::updateSprites(){
 
 void Bullet::reduceBulletSpeed( float perspectiveFactor )
 {
-	float minVelocity = 1.0;
+	float minVelocity = 5.0;
 	if( bulletBody->GetLinearVelocity().Length() <= minVelocity ){
 			
 		g_screenLog->log( LL_INFO , " !Minimum bullet speed reached ", bulletBody->GetMass()  );
@@ -210,7 +205,7 @@ void Bullet::reduceBulletSpeed( float perspectiveFactor )
 	}
 	
 	//get velocity direction
-	b2Vec2 normalizedVelocityVector = bulletBody->GetLinearVelocity();
+	b2Vec2 normalizedVelocityVector = ghostBody->GetLinearVelocity();
 	normalizedVelocityVector.Normalize();
 	
 	//get velocity values
@@ -218,10 +213,11 @@ void Bullet::reduceBulletSpeed( float perspectiveFactor )
 	float desiredVelocity = perspectiveFactor*currentVelocity;
 	
 	//calculate force needed to set desired speed
-	float neededForce = ghostBody->GetMass()*(desiredVelocity-currentVelocity);
+	//float neededForce = ghostBody->GetMass()*(desiredVelocity-currentVelocity);
 	
 	//apply counter impulse
-	bulletBody->ApplyForce( neededForce*normalizedVelocityVector, bulletBody->GetWorldCenter(), NULL );	
+	//bulletBody->ApplyForce( neededForce*normalizedVelocityVector, bulletBody->GetWorldCenter(), NULL );	
+	bulletBody->SetLinearVelocity(desiredVelocity*normalizedVelocityVector);
 
 }
 

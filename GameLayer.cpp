@@ -22,7 +22,7 @@ bool GameLayer::init()
 
 	worldStartX = 0;
 	worldEndX = 4*winSize.width/3;
-	perspectiveX = (2*winSize.width)/4;
+	perspectiveX = (3*winSize.width)/4;
 
 	if ( !Layer::init() ) return false;
 
@@ -60,7 +60,7 @@ void GameLayer::initBox2D(){
 void GameLayer::initGround(){
 	
 	ground = new Ground(this, m_world, worldStartX, worldEndX, perspectiveX );
-	ground->initGround( Point( worldStartX+100 ,0) , Point( worldEndX-100, winSize.height/6) );
+	ground->initGround( Point( worldStartX ,0) , Point( worldEndX, winSize.height/6) );
 }
 
 void GameLayer::initCannon(){
