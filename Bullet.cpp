@@ -2,7 +2,9 @@
 
 using namespace cocos2d;
 
-void Bullet::createBullet( b2Vec2 startPoint ){
+void Bullet::createBullet( b2Vec2 startPoint , float scale ){
+
+	setScale(scale);
 
 	this->startX = startPoint.x;
 	this->startY = startPoint.y;
@@ -14,7 +16,7 @@ void Bullet::createBullet( b2Vec2 startPoint ){
 	bulletBody = m_world->CreateBody(&bulletDef);
 
 	b2CircleShape bulletShape;
-	bulletShape.m_radius = m_radius; 
+	bulletShape.m_radius = scale*m_radius; 
 
 	b2FixtureDef bulletFixtureDef;
 	bulletFixtureDef.density = m_density;
@@ -28,6 +30,7 @@ void Bullet::createBullet( b2Vec2 startPoint ){
 
 	bulletSprite = cocos2d::Sprite::create("bullet.png",  cocos2d::CCRectMake(0, 0, 55, 56));
 	bulletSprite->setPosition( cocos2d::Vec2( (startX+0.0)*PTM_RATIO , (startY+0.0)*PTM_RATIO ) );
+	bulletSprite->setScale(scale);
 	layer->addChild( bulletSprite , 1 );
 	
 	bulletBody->SetUserData(this);

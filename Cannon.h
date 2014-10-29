@@ -22,7 +22,6 @@ class Cannon : public GameObject {
 				
 		float totalRotation;
 		
-		float scale;
 		
 	public:
 	
@@ -40,7 +39,6 @@ class Cannon : public GameObject {
 			cannonBarrelSprite = NULL;
 			
 			totalRotation = 0;
-			scale = 1;
 		}
 	
 		void createCannon( b2Vec2 startPoint, float scale );
@@ -56,10 +54,6 @@ class Cannon : public GameObject {
 		b2Vec2 GetBarrelExit();
 		
 		float GetAngle();
-		
-		void setScale(float scale);
-		
-		float getScale();
 		
 		void updateSprites();
 		

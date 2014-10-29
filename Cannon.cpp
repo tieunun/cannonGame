@@ -127,17 +127,17 @@ void Cannon::rotateBarrel( b2Vec2 clickedPoint ){
 
 void Cannon::shoot()
 {
-	b2Vec2 toTarget = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(11,0) ) ;
-	m_cannonFrame->ApplyLinearImpulse( b2Vec2(-50*toTarget.x,-50*toTarget.y), m_cannonFrame->GetWorldCenter(), NULL );
+	b2Vec2 toTarget = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(scale*11,0) ) ;
+	m_cannonFrame->ApplyLinearImpulse( b2Vec2(50*toTarget.x,50*toTarget.y), m_cannonFrame->GetWorldCenter(), NULL );
 }
 
 b2Vec2 Cannon::GetShootingDirection(){
-	b2Vec2 direction = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(11,0) ) ;
+	b2Vec2 direction = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(scale*6.5,0) ) ;
 	return direction;
 }
 
 b2Vec2 Cannon::GetBarrelExit(){
-	b2Vec2 position = m_cannonBarrel->GetWorldPoint( b2Vec2(6,0) );
+	b2Vec2 position = m_cannonBarrel->GetWorldPoint( b2Vec2(scale*6,0) );
 	return position;
 }
 
@@ -177,13 +177,4 @@ Cannon::~Cannon(){
 			layer->removeChild(cannonWheelSprite);
 			m_world->DestroyBody(m_cannonWheel);
 	}
-}
-
-void Cannon::setScale(float scale)
-{
-	this->scale = scale;
-}
-
-float Cannon::getScale(){
-	return this->scale;
 }

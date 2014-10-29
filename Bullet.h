@@ -43,7 +43,7 @@ class Bullet : public GameObject {
 
 		}
 
-		void createBullet( b2Vec2 startPoint );
+		void createBullet( b2Vec2 startPoint, float scale );
 
 		~Bullet();
 

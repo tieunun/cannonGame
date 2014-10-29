@@ -28,6 +28,8 @@ private:
 	std::vector<Bullet*> bullets;
 
 	BulletContactListener bulletContactListenerInstance;
+	
+	float globalScale;
 
 public:
 

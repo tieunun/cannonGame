@@ -18,6 +18,10 @@ enum _entityCategory {
 
 class GameObject
 {
+	protected:
+	
+		float scale;
+	
 	public:
 		
 		std::string * name;
@@ -27,11 +31,18 @@ class GameObject
 			this->m_world = world;
 			this->name = name;
 			this->layer = layer;
+			
+			scale = 1;
 		};
 		
 		~GameObject(){
 			if( name != NULL ) delete name;
 		};
+		
+		void setScale(float scale)
+		{
+			this->scale = scale;
+		}
 
 	protected:
 

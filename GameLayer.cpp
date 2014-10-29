@@ -23,6 +23,7 @@ bool GameLayer::init()
 	if ( !Layer::init() ) return false;
 
 	directionPoint.Set( 100, 100 );
+	globalScale = 0.5;
 
 	//INIT BOX2D
 	initBox2D();
@@ -58,14 +59,14 @@ void GameLayer::initGround(){
 
 void GameLayer::initCannon(){
 	cannon = new Cannon(this, m_world);
-	cannon->createCannon( b2Vec2( 2 , 2 ) , 0.5 );
+	cannon->createCannon( b2Vec2( 2 , 2 ) , globalScale );
 }
 
 void GameLayer::createBullet(){
 
 	Bullet * bullet = new Bullet(this, m_world, 0.5 , 1);
-	bullet->createBullet( cannon->GetBarrelExit() );
-	bullet->shoot( cannon->GetShootingDirection() , 2 );
+	bullet->createBullet( cannon->GetBarrelExit(),  globalScale  );
+	bullet->shoot( cannon->GetShootingDirection() , 0.5 );
 	
 	bullets.push_back(bullet);
 
