@@ -25,8 +25,8 @@ class Cannon : public GameObject {
 		
 	public:
 	
-		Cannon(  cocos2d::Layer * layer, b2World * world ) 
-		: GameObject( layer, world, new std::string("CANNON") )  {
+		Cannon(  cocos2d::Layer * layer, b2World * world, float worldStartX, float worldEndX, float perspectiveX ) 
+		: GameObject( layer, world, worldStartX, worldEndX, perspectiveX, new std::string("CANNON") )  {
 			m_cannonWheel = NULL;
 			m_cannonFrame = NULL;	
 			m_cannonHolder = NULL;

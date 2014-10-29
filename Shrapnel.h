@@ -17,8 +17,8 @@ public:
 	b2Body* shrapnelBody;
 	cocos2d::Sprite * shrapnelSprite;
 	
-	Shrapnel( Layer * layer, b2World* world, float blastPower, float density)
-	: GameObject(  layer, world, new std::string("SHRAPNEL") )
+	Shrapnel( Layer * layer, b2World* world, float blastPower, float density, float worldStartX, float worldEndX, float perspectiveX )
+	: GameObject(  layer, world,  worldStartX, worldEndX, perspectiveX,  new std::string("SHRAPNEL") )
 	{
 		m_density = density;
 		m_blastPower = blastPower;

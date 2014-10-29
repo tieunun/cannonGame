@@ -15,6 +15,8 @@ class GameLayer : public cocos2d::Layer
 		
 private:
 
+	float worldStartX, worldEndX, perspectiveX;
+
 	b2Vec2 directionPoint;
 	
 	Size winSize;

@@ -20,6 +20,10 @@ bool GameLayer::init()
 	//SET WIN SIZE
 	winSize = Director::getInstance()->getVisibleSize();
 
+	worldStartX = 0;
+	worldEndX = winSize.width;
+	perspectiveX = (2*winSize.width)/4;
+
 	if ( !Layer::init() ) return false;
 
 	directionPoint.Set( 100, 100 );
@@ -53,20 +57,20 @@ void GameLayer::initBox2D(){
 
 void GameLayer::initGround(){
 	
-	ground = new Ground(this, m_world);
+	ground = new Ground(this, m_world, worldStartX, worldEndX, perspectiveX );
 	ground->initGround( Point(100,0) , Point(winSize.width-100, winSize.height/6) );
 }
 
 void GameLayer::initCannon(){
-	cannon = new Cannon(this, m_world);
+	cannon = new Cannon(this, m_world, worldStartX, worldEndX, perspectiveX );
 	cannon->createCannon( b2Vec2( 2 , 2 ) , globalScale );
 }
 
 void GameLayer::createBullet(){
 
-	Bullet * bullet = new Bullet(this, m_world, 0.5 , 1);
+	Bullet * bullet = new Bullet(this, m_world, 0.5 , 1, worldStartX, worldEndX, perspectiveX );
 	bullet->createBullet( cannon->GetBarrelExit(),  globalScale  );
-	bullet->shoot( cannon->GetShootingDirection() , 1.5 );
+	bullet->shoot( cannon->GetShootingDirection() , 1 );
 	
 	bullets.push_back(bullet);
 
@@ -122,7 +126,7 @@ void GameLayer::tick(float dt){
 			bullets.erase(bullets.begin()+i);
 			delete bullet;
 			
-			this->runAction( Follow::create( cannon->getMainSprite() ,  Rect(0, 0, this->getScale()*20000, this->getScale()*1300) ));
+			this->runAction( Follow::create( cannon->getMainSprite() ,  Rect(worldStartX*this->getScale(), worldStartX*this->getScale(), worldEndX*this->getScale() , worldEndX*this->getScale() ) ));
 	
 		}
 	}

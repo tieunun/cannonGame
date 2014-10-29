@@ -24,8 +24,8 @@ class Bullet : public GameObject {
 		std::vector <Shrapnel*> shrapnels;
 		bool exploded, markedToExplode;
 			
-		Bullet( Layer * layer, b2World * world, float radius, float density ) 
-		: GameObject( layer, world , new std::string("BULLET") ) {
+		Bullet( Layer * layer, b2World * world, float radius, float density, float worldStartX, float worldEndX, float perspectiveX ) 
+		: GameObject( layer, world , worldStartX, worldEndX, perspectiveX, new std::string("BULLET") ) {
 
 			bulletBody = NULL;
 			bulletSprite = NULL;

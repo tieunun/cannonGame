@@ -20,19 +20,24 @@ class GameObject
 {
 	protected:
 	
+		float worldStartX, worldEndX, perspectiveX;
 		float scale;
 	
 	public:
 		
 		std::string * name;
 		
-		GameObject( cocos2d::Layer * layer, b2World * world, std::string * name )
+		GameObject( cocos2d::Layer * layer, b2World * world, float worldStartX, float worldEndX, float perspectiveX, std::string * name )
 		{ 
 			this->m_world = world;
 			this->name = name;
 			this->layer = layer;
 			
-			scale = 1;
+			
+			this->worldStartX = worldStartX;
+			this->worldEndX = worldEndX;
+			this->perspectiveX = perspectiveX;
+			this->scale = 1;
 		};
 		
 		~GameObject(){
@@ -50,6 +55,19 @@ class GameObject
 		
 		b2World*  m_world;
 		
+		// Implementation of perspective
+		float getPerspectiveFactor( float positionX ){
+			
+			//Before perspective point
+			if( positionX <= perspectiveX ) return 1.0;
+			
+			// Simple linear function y = 1 - (poistionX-perspectiveX)/(worldEndX - perspectiveX);
+			float a = 1 / (worldEndX - perspectiveX);
+			float scale = 1 - a*(positionX - perspectiveX); 
+			
+			return scale;
+		}
+
 		
 };
 

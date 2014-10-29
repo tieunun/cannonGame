@@ -65,7 +65,7 @@ void Bullet::explode(){
 		float angle = (i / (float)numRays) * 360 * DEGTORAD;
 		b2Vec2 rayDir( sinf(angle), cosf(angle) );
 
-		Shrapnel * s = new Shrapnel(layer, m_world, blastPower, 100 );
+		Shrapnel * s = new Shrapnel(layer, m_world, blastPower, 100, worldStartX, worldEndX, perspectiveX );
 		s->createShrapnel( center, rayDir );
 		shrapnels.push_back(s);
 	}
@@ -107,7 +107,7 @@ void Bullet::createExplosionSprite()
 	
 	explosionBody->SetUserData(this);
 	
-	layer->runAction(cocos2d::CCFollow::create(explosionSprite,  cocos2d::CCRectMake(0, 0, 20000, 1300) ));
+	layer->runAction(cocos2d::CCFollow::create(explosionSprite,  Rect(worldStartX*layer->getScale(), worldStartX*layer->getScale(), worldEndX*layer->getScale() , worldEndX*layer->getScale() ) ));
 }
 
 bool Bullet::updateSprites(){
@@ -132,14 +132,25 @@ bool Bullet::updateSprites(){
 		if( markedToExplode ){
 			explode();
 		}
+		else if( bulletBody->GetPosition().x * PTM_RATIO > worldEndX )
+		{
+			explode();
+		}
 		else{
 	
 			if(bulletBody->GetPosition().x * PTM_RATIO > 1200 )
-				layer->runAction(cocos2d::CCFollow::create(bulletSprite,  cocos2d::CCRectMake(0, 0, layer->getScale()*20000, layer->getScale()*1300) ));
+				layer->runAction(cocos2d::CCFollow::create(bulletSprite,  Rect(worldStartX*layer->getScale(), worldStartX*layer->getScale(), worldEndX*layer->getScale() , worldEndX*layer->getScale() ) ));
 	
 	
 			bulletSprite->setPosition( cocos2d::ccp( bulletBody->GetPosition().x * PTM_RATIO , bulletBody->GetPosition().y * PTM_RATIO) );
 			bulletSprite->setRotation( -1 * CC_RADIANS_TO_DEGREES( bulletBody->GetAngle()) );
+			
+			//setPerspective
+			float perspectiveFactor = getPerspectiveFactor( bulletBody->GetPosition().x * PTM_RATIO );
+			bulletSprite->setScale( perspectiveFactor * scale );
+			
+			//setDamping
+			bulletBody->ApplyLinearImpulse( (1-perspectiveFactor)*b2Vec2( -0.05, -0.05 ), bulletBody->GetWorldCenter(), NULL );
 		}
 	}
 

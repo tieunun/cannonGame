@@ -31,8 +31,8 @@ private:
 	
 public:
 	
-	Ground( Layer * layer , b2World * world) 
-	:GameObject( layer , world, new std::string("GROUND") ) {
+	Ground( Layer * layer , b2World * world, float worldStartX, float worldEndX, float perspectiveX ) 
+	:GameObject( layer , world,  worldStartX, worldEndX, perspectiveX, new std::string("GROUND") ) {
 
 		winSize = Director::getInstance()->getVisibleSize();
 		
