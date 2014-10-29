@@ -47,6 +47,8 @@ bool GameLayer::init()
 
 void GameLayer::initBox2D(){
 
+	g_screenLog->log( LL_INFO , "Initing Box2D" );
+
 	b2Vec2 gravity;
 	gravity.Set( 0.0f , -10.0f );
 	m_world = new b2World( gravity );	
@@ -62,11 +64,14 @@ void GameLayer::initGround(){
 }
 
 void GameLayer::initCannon(){
+
+
 	cannon = new Cannon(this, m_world, worldStartX, worldEndX, perspectiveX );
 	cannon->createCannon( b2Vec2( 2 , 2 ) , globalScale );
 }
 
 void GameLayer::createBullet(){
+
 
 	Bullet * bullet = new Bullet(this, m_world, 0.5 , 1, worldStartX, worldEndX, perspectiveX );
 	bullet->createBullet( cannon->GetBarrelExit(),  globalScale  );

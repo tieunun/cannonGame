@@ -7,6 +7,7 @@
 #include "Cannon.h"
 #include "Bullet.h"
 #include "BulletContactListener.h"
+#include "ScreenLog.h"
 
 using namespace cocos2d;
 

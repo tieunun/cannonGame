@@ -16,12 +16,12 @@ void Ground::update(){
 
 void Ground::initGround( Point bottomLeft , Point topRight ){
 		
-	Color4F bgColor = randomBrightColor();
+	//Color4F bgColor = randomBrightColor();
 	Texture2D::TexParams params = {GL_LINEAR, GL_LINEAR, GL_REPEAT,  GL_REPEAT};
 	
-	Texture2D * texture = createTexture(bgColor, 512.0 , 512.0 , 6);
+	//Texture2D * texture = createTexture(bgColor, 512.0 , 512.0 , 6);
 	
-	groundSprite = Sprite::createWithTexture( texture , Rect(bottomLeft.x , bottomLeft.y , topRight.x , topRight.y ) );
+	groundSprite = Sprite::create( "bg.png" , Rect(bottomLeft.x , bottomLeft.y , topRight.x , topRight.y ) );
 	groundSprite->getTexture()->setTexParameters(params);
 	
 	layer->addChild(groundSprite);

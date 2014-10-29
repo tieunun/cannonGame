@@ -1,10 +1,14 @@
 #include "AppDelegate.h"
 #include "GameLayer.h"
+#include "ScreenLog.h"
 
 USING_NS_CC;
 
 AppDelegate::AppDelegate() {
-
+	g_screenLog = new ScreenLog();
+	g_screenLog->setLevelMask( LL_DEBUG | LL_INFO | LL_WARNING | LL_ERROR | LL_FATAL );
+	g_screenLog->setFontFile( "DroidSans.ttf" );
+	g_screenLog->setTimeoutSeconds(15);
 }
 
 AppDelegate::~AppDelegate() 
@@ -39,6 +43,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     auto scene = GameLayer::createScene();
+
+	g_screenLog->attachToScene( scene );
 
     // run
     director->runWithScene(scene);
