@@ -2,11 +2,13 @@
 
 using namespace cocos2d;
 
-void Cannon::createCannon( b2Vec2 startPoint ){
+void Cannon::createCannon( b2Vec2 startPoint , float scale ){
+	
+	setScale( scale );
 	
 	b2BodyDef cannonDef;
 	cannonDef.type = b2_dynamicBody;
-
+	
 	b2FixtureDef cannonFixtureDef;
 	
 	//set Colliding
@@ -14,46 +16,46 @@ void Cannon::createCannon( b2Vec2 startPoint ){
 	cannonFixtureDef.filter.maskBits = GROUND | BULLET;
 
 	//Create cannon barrel
-	cannonDef.position.Set(13.5, 7.0);
+	cannonDef.position.Set( scale*13.5, scale*7.0);
 	cannonFixtureDef.density = 0.6;
 	cannonFixtureDef.friction = 0.2;
 	
 	m_cannonBarrel = m_world->CreateBody( &cannonDef );
 	b2PolygonShape cannonBarrelShape;
-	cannonBarrelShape.SetAsBox(5, 0.5);
+	cannonBarrelShape.SetAsBox(scale*5, scale*0.5);
 		
 	cannonFixtureDef.shape = &cannonBarrelShape;
 	m_cannonBarrel->CreateFixture(&cannonFixtureDef);
 	
 	cannonBarrelSprite = cocos2d::Sprite::create("lufa.png",  Rect(0, 0, 640, 104));
-	cannonBarrelSprite->setPosition( cocos2d::Vec2( (13.5)*PTM_RATIO , (7.0)*PTM_RATIO ) );
-	cannonBarrelSprite->setScale(0.5);
+	cannonBarrelSprite->setPosition( cocos2d::Vec2( (scale*13.5)*PTM_RATIO , (scale*7.0)*PTM_RATIO ) );
+	cannonBarrelSprite->setScale(scale*0.5);
 	layer->addChild( cannonBarrelSprite , 0 );
 	
 	//Create cannon frame
 	b2PolygonShape cannonFrameShape;
-	cannonFrameShape.SetAsBox( 4.5, 1.0 );
+	cannonFrameShape.SetAsBox( scale*4.5, scale*1.0 );
 	
 	cannonFixtureDef.density = 5;
 	cannonFixtureDef.friction = 0.9;
 
-	cannonDef.position.Set(5, 5);		
+	cannonDef.position.Set(scale*5, scale*5);		
 	m_cannonFrame = m_world->CreateBody( &cannonDef );
 	
 	cannonFixtureDef.shape = &cannonFrameShape;
 	m_cannonFrame->CreateFixture(&cannonFixtureDef);
 	
 	cannonFrameSprite = Sprite::create("baza.png",  Rect(0, 0, 576, 128));
-	cannonFrameSprite->setPosition( Vec2( (5.0)*PTM_RATIO , (5.0)*PTM_RATIO ) );
-	cannonFrameSprite->setScale(0.5);
+	cannonFrameSprite->setPosition( Vec2( (scale*5.0)*PTM_RATIO , (scale*5.0)*PTM_RATIO ) );
+	cannonFrameSprite->setScale(scale*0.5);
 	layer->addChild( cannonFrameSprite , 0 );
 	
 	m_cannonFrame->SetUserData(this);
 	
 	//Create cannon wheel
-	cannonDef.position.Set(7.5, 5.0);
+	cannonDef.position.Set(scale*7.5, scale*5.0);
 	b2CircleShape cannonWheelShape;
-	cannonWheelShape.m_radius = 2; 
+	cannonWheelShape.m_radius = scale*2; 
 	
 	m_cannonWheel = m_world->CreateBody( &cannonDef );
 	
@@ -63,8 +65,8 @@ void Cannon::createCannon( b2Vec2 startPoint ){
 	m_cannonWheel->CreateFixture(&cannonFixtureDef);
 	
 	cannonWheelSprite = cocos2d::Sprite::create("kolo.png",  Rect(0, 0, 256, 256));
-	cannonWheelSprite->setPosition( cocos2d::Vec2( (7.5)*PTM_RATIO  , (5.0)*PTM_RATIO  ) );
-	cannonWheelSprite->setScale(0.5);
+	cannonWheelSprite->setPosition( cocos2d::Vec2( (scale*7.5)*PTM_RATIO  , (scale*5.0)*PTM_RATIO  ) );
+	cannonWheelSprite->setScale(scale*0.5);
 	layer->addChild( cannonWheelSprite , 0 );
 	
 	//Join Frame and Barrel
@@ -72,8 +74,8 @@ void Cannon::createCannon( b2Vec2 startPoint ){
 	revoluteJointDef.bodyA = m_cannonFrame;
 	revoluteJointDef.bodyB = m_cannonBarrel;
 	revoluteJointDef.collideConnected = false;
-	revoluteJointDef.localAnchorA.Set(3.5,0.75);
-	revoluteJointDef.localAnchorB.Set(-2.5,0);
+	revoluteJointDef.localAnchorA.Set(scale*3.5,scale*0.75);
+	revoluteJointDef.localAnchorB.Set(-scale*2.5,0);
 
 	revoluteJointDef.enableMotor = false;
 	revoluteJointDef.enableLimit = false;
@@ -86,7 +88,7 @@ void Cannon::createCannon( b2Vec2 startPoint ){
 	revoluteJointDef.bodyA = m_cannonFrame;
 	revoluteJointDef.bodyB = m_cannonWheel;
 	revoluteJointDef.collideConnected = false;
-	revoluteJointDef.localAnchorA.Set(2.5,0.25);
+	revoluteJointDef.localAnchorA.Set(scale*2.5,scale*0.25);
 	revoluteJointDef.localAnchorB.Set(0,0);
 
 	revoluteJointDef.enableMotor = false;
@@ -175,4 +177,13 @@ Cannon::~Cannon(){
 			layer->removeChild(cannonWheelSprite);
 			m_world->DestroyBody(m_cannonWheel);
 	}
+}
+
+void Cannon::setScale(float scale)
+{
+	this->scale = scale;
+}
+
+float Cannon::getScale(){
+	return this->scale;
 }

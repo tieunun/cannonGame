@@ -58,7 +58,7 @@ void GameLayer::initGround(){
 
 void GameLayer::initCannon(){
 	cannon = new Cannon(this, m_world);
-	cannon->createCannon( b2Vec2( 0 , 2 ) );
+	cannon->createCannon( b2Vec2( 2 , 2 ) , 0.5 );
 }
 
 void GameLayer::createBullet(){

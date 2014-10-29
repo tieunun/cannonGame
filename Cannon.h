@@ -22,6 +22,8 @@ class Cannon : public GameObject {
 				
 		float totalRotation;
 		
+		float scale;
+		
 	public:
 	
 		Cannon(  cocos2d::Layer * layer, b2World * world ) 
@@ -38,9 +40,10 @@ class Cannon : public GameObject {
 			cannonBarrelSprite = NULL;
 			
 			totalRotation = 0;
+			scale = 1;
 		}
 	
-		void createCannon( b2Vec2 startPoint );
+		void createCannon( b2Vec2 startPoint, float scale );
 		
 		void moveByVector( b2Vec2 position );
 		
@@ -53,6 +56,10 @@ class Cannon : public GameObject {
 		b2Vec2 GetBarrelExit();
 		
 		float GetAngle();
+		
+		void setScale(float scale);
+		
+		float getScale();
 		
 		void updateSprites();
 		
