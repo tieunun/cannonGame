@@ -40,7 +40,7 @@ void Ground::setBox2DBody( Point bottomLeft , Point topRight ) {
 	
 	b2BodyDef groundDef;
 	groundDef.type = b2_staticBody;
-	groundDef.position.Set( (winSize.width)/(2*PTM_RATIO) , 0 );
+	groundDef.position.Set( (worldEndX - worldStartX)/(2*PTM_RATIO) , 0 );
  
 	b2PolygonShape groundShape;
 	groundShape.SetAsBox( (topRight.x - bottomLeft.x)/(2*PTM_RATIO) , (topRight.y - bottomLeft.y)/(2*PTM_RATIO) );
