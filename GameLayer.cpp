@@ -66,7 +66,7 @@ void GameLayer::createBullet(){
 
 	Bullet * bullet = new Bullet(this, m_world, 0.5 , 1);
 	bullet->createBullet( cannon->GetBarrelExit(),  globalScale  );
-	bullet->shoot( cannon->GetShootingDirection() , 0.5 );
+	bullet->shoot( cannon->GetShootingDirection() , 1.5 );
 	
 	bullets.push_back(bullet);
 
@@ -92,7 +92,7 @@ void GameLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, coco
 	
 	if( location.x <= 300 )
 	{
-		cannon->shoot();
+		//cannon->shoot();
 		createBullet();
 	}
 }

@@ -121,7 +121,7 @@ void Cannon::rotateBarrel( b2Vec2 clickedPoint ){
 	while ( totalRotation >  180 * DEGTORAD ) totalRotation -= 360 * DEGTORAD;
 	
 	m_cannonBarrelJoint->EnableMotor(true);
-	m_cannonBarrelJoint->SetMaxMotorTorque(2000);
+	m_cannonBarrelJoint->SetMaxMotorTorque(scale*2000);
 	m_cannonBarrelJoint->SetMotorSpeed( totalRotation < 0 ? -1 : 3 );
 }
 
