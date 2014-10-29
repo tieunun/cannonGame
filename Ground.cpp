@@ -5,293 +5,60 @@ using namespace cocos2d;
 // UPDATING
 
 void Ground::update(){
-	drawHillsCommand.init( layer->getGlobalZOrder() );
-	drawHillsCommand.func = CC_CALLBACK_0( Ground::drawHills , this );
-	Director::getInstance()->getRenderer()->addCommand(&drawHillsCommand);	
+	if( groundBody == NULL || groundSprite == NULL ) return;
+	
+	groundSprite->setPosition( Point( groundBody->GetPosition().x * PTM_RATIO, groundBody->GetPosition().y * PTM_RATIO) );
+	groundSprite->setRotation( -1 * CC_RADIANS_TO_DEGREES( groundBody->GetAngle()) );
+
 }
 
-// RANDOM GROUND GENERATING
+// GROUND GENERATE
 
-void Ground::initGround(){
-	setTexture();
-	generateHills();
-}
-
-void Ground::generateHills() {
-	
-	float x = -3*winSize.width/2;
-	float y = winSize.height / 4;
-
-	for(int i = 0; i < maxHillPoints; ++i ) {
-		hillPoints[i] = Point(x, y);
-		x += winSize.width/4;
-		y = (rand() % (int) winSize.height/2 );
-		hillPointsCount++;
-	}
-	
-	setBounds();
-	setSimpleBox2DBody();
-}
-
-// TRIANGLE DRAWING 
-
-void Ground::setBounds(){
-	
-	float min = offsetX-winSize.width*12/8/layer->getScale();
-	float max = offsetX+winSize.width*12/8/layer->getScale();
-	
-	//Reverse direction
-	if( hillPoints[startPoint].x > min ) startPoint = 0;
-	
-	while( hillPoints[startPoint].x < min )
-		startPoint++;
-
-	endPoint = startPoint;
+void Ground::initGround( Point bottomLeft , Point topRight ){
 		
-	while( hillPoints[endPoint].x < max )
-		endPoint++;
-
-	if( endPoint > maxHillPoints -2 ) endPoint = maxHillPoints - 2 ;
-	if( startPoint > maxHillPoints -2 ) startPoint = maxHillPoints - 2 ;
-
-
-	setSimpleVertex();
-	setSimpleBox2DBody();
-
-	prevStartPoint = startPoint;
-	prevEndPoint = endPoint; 
-				
-}
-
-
-void Ground::setSimpleVertex()
-{
-	float minY = 0;
+	Color4F bgColor = randomBrightColor();
+	Texture2D::TexParams params = {GL_LINEAR, GL_LINEAR, GL_REPEAT,  GL_REPEAT};
 	
-	// vertices for visible area
-	hillVerticesCount = 0;
-	borderVerticesCount = 0;
-	Point p0, p1;
+	Texture2D * texture = createTexture(bgColor, 512.0 , 512.0 , 6);
 	
-	p0 = Point( (hillPoints[0].x - offsetX) , (hillPoints[0].y-offsetY)  ) ;
-
-	for (int i = 1 ; i < maxHillPoints-1 ; i++) {
-		
-		p1 =Point( ( hillPoints[i].x - offsetX )  * layer->getScale() , (hillPoints[i].y-offsetY)  * layer->getScale() );
- 
-		vertexPoints[ hillVerticesCount ] = Point(p0.x, 0 );
-		textureCoords[ hillVerticesCount++ ] = Point((p0.x-offsetXTexture)/textureWidth, 1.0f );
-		
-		vertexPoints[ hillVerticesCount ] = Point(p1.x, 0 );
-		textureCoords[ hillVerticesCount++ ] = Point((p1.x-offsetXTexture)/textureWidth, 1.0f );
- 
-		vertexPoints[ hillVerticesCount ] = Point(p0.x, p0.y);
-		textureCoords[ hillVerticesCount++ ] = Point((p0.x-offsetXTexture)/textureWidth, 0);
-		
-		vertexPoints[ hillVerticesCount ] = Point(p1.x, p1.y);
-		textureCoords[ hillVerticesCount++ ] = Point((p1.x-offsetXTexture)/textureWidth, 0);
- 
-		p0 = p1;
-	}
- 
+	groundSprite = Sprite::createWithTexture( texture , Rect(bottomLeft.x , bottomLeft.y , topRight.x , topRight.y ) );
+	groundSprite->getTexture()->setTexParameters(params);
 	
-}
-
-void Ground::setVertex()
-{
-	float minY = 0;
+	layer->addChild(groundSprite);
 	
-	// vertices for visible area
-	hillVerticesCount = 0;
-	borderVerticesCount = 0;
-	Point p0, p1, pt0, pt1;
-	p0 = Point( (hillPoints[startPoint].x - offsetX) * layer->getScale() , (hillPoints[startPoint].y-offsetY)  * layer->getScale() ) ;
-	for (int i = startPoint+1; i < endPoint+1; i++) {
-		p1 =Point( ( hillPoints[i].x - offsetX )  * layer->getScale() , (hillPoints[i].y-offsetY)  * layer->getScale() );
- 
-		// triangle strip between p0 and p1
-		int hSegments = floorf((p1.x-p0.x)/hillSegmentWidth);
-		float dx = (p1.x - p0.x) / hSegments;
-		float da = M_PI / hSegments;
-		float ymid = (p0.y + p1.y) / 2;
-		float ampl = (p0.y - p1.y) / 2;
-		pt0 = p0;
-		borderPoints[ borderVerticesCount++ ] = pt0;
-		for (int j=1; j<hSegments+1; j++) {
-			pt1.x = p0.x + j*dx;
-			pt1.y = ymid + ampl * cosf(da*j);
-			borderPoints[ borderVerticesCount++ ] = pt1;
- 
-			vertexPoints[ hillVerticesCount ] = Point(pt0.x, 0 );
-			textureCoords[ hillVerticesCount++ ] = Point((pt0.x-offsetXTexture)/textureWidth, 1.0f );
-			vertexPoints[ hillVerticesCount ] = Point(pt1.x, 0 );
-			textureCoords[ hillVerticesCount++ ] = Point((pt1.x-offsetXTexture)/textureWidth, 1.0f );
- 
-			vertexPoints[ hillVerticesCount ] = Point(pt0.x, pt0.y);
-			textureCoords[ hillVerticesCount++ ] = Point((pt0.x-offsetXTexture)/textureWidth, 0);
-			vertexPoints[ hillVerticesCount ] = Point(pt1.x, pt1.y);
-			textureCoords[ hillVerticesCount++ ] = Point((pt1.x-offsetXTexture)/textureWidth, 0);
- 
-			pt0 = pt1;
-		}
- 
-		p0 = p1;
-	}
+	this->setBox2DBody( bottomLeft , topRight );
 	
-}
- 
-void Ground::drawHills(){
-	
-	//setBounds();
-
-	// INIT OPENGL
-	this->setGLProgram(ShaderCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE));
-	this->getGLProgram()->use();
-	this->getGLProgram()->setUniformsForBuiltins();
-	
-	// ATTACH TEXTURE
-	if( textureSprite != NULL ) ccGLBindTexture2D( textureSprite->getTexture()->getName() );
-
-	// DRAW TRAINGLES
-	CC_NODE_DRAW_SETUP();
-	
-	GL::enableVertexAttribs( GL::VERTEX_ATTRIB_FLAG_POSITION | GL::VERTEX_ATTRIB_FLAG_TEX_COORD );
-	
-	ccDrawColor4F(1.0f, 1.0f, 1.0f, 1.0f);
-	
-	glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, vertexPoints);
-	glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_TEX_COORD, 2, GL_FLOAT, GL_FALSE, 0, textureCoords);
-	
-	glDrawArrays( GL_TRIANGLE_STRIP , 0, (GLsizei) hillVerticesCount );
-	
-	//drawBox2DGround();
-
 }
 
 // BOX2D
 
-void Ground::drawBox2DGround(){
-
-	//DRAW BASIC LINE
-	
-	glLineWidth(10.0f);
-	ccDrawColor4F( 0.5, 0.5, 0.5, 0.5 );
-
-	for(int i = 1 ; i < maxHillPoints-1 ; ++i) {    
-		
-		ccDrawLine( Point( (hillPoints[i-1].x-offsetX) * layer->getScale() , (hillPoints[i-1].y-offsetY) * layer->getScale() ) , Point( (hillPoints[i].x-offsetX) * layer->getScale() , (hillPoints[i].y-offsetY) * layer->getScale() ) );    
-			
-	}
-	
-	/*DRAW FINAL LINE
-	
-	glLineWidth(10.0f);
-	ccDrawColor4F( 1, 0.5, 0.5, 0.5 );
-
-	int prevIndex = 0;
-	for(int i = 1 ; i < borderVerticesCount-1 ; ++i) {    
-		
-		if( borderPoints[i].x - borderPoints[prevIndex].x > 50 )
-		{
-			ccDrawLine( Point(borderPoints[prevIndex].x , borderPoints[prevIndex].y) , Point(borderPoints[i].x , borderPoints[i].y ) );    
-			prevIndex=i;
-		}
-		
-	}
-*/
-}
-
-void Ground::setSimpleBox2DBody() {
+void Ground::setBox2DBody( Point bottomLeft , Point topRight ) {
  
 	if(groundBody != NULL) {
 		m_world->DestroyBody(groundBody);
 	}
+	
+	b2BodyDef groundDef;
+	groundDef.type = b2_staticBody;
+	groundDef.position.Set( (winSize.width)/(2*PTM_RATIO) , 0 );
  
-	b2BodyDef bd;
-	bd.type = b2_staticBody;
-	bd.position.Set(0, 0);
- 
-	groundBody = m_world->CreateBody(&bd);
-
-	b2ChainShape shape;
- 
+	b2PolygonShape groundShape;
+	groundShape.SetAsBox( (topRight.x - bottomLeft.x)/(2*PTM_RATIO) , (topRight.y - bottomLeft.y)/(2*PTM_RATIO) );
+	
 	b2FixtureDef groundFixtureDef;
-	groundFixtureDef.density = 100;
-	
-	//set Colliding
+	groundFixtureDef.density = 1.0;
+	groundFixtureDef.friction = 0.3;
 	groundFixtureDef.filter.categoryBits = GROUND;
-	groundFixtureDef.filter.maskBits = CANNON | BULLET;
+	groundFixtureDef.filter.maskBits = CANNON;
 
-	b2Vec2 border[ maxHillPoints ];
+	groundBody = m_world->CreateBody( &groundDef );
 	
-	int prevIndex = 0;
-	int count = 0;
-	for(int i = 0 ; i < maxHillPoints-1 ; ++i) {    
-		border[i].Set( (hillPoints[i].x)/PTM_RATIO , (hillPoints[i].y)/PTM_RATIO ) ;    
-	}
-	
-	shape.CreateChain( border ,  maxHillPoints-1 );
-
-	groundFixtureDef.shape = &shape;
-	groundBody->CreateFixture(&groundFixtureDef);
-
-}
-
-void Ground::setBox2DBody() {
- 
-	if(groundBody != NULL) {
-		m_world->DestroyBody(groundBody);
-	}
- 
-	b2BodyDef bd;
-	bd.type = b2_staticBody;
-	bd.position.Set(0, 0);
- 
-	groundBody = m_world->CreateBody(&bd);
-
-	b2ChainShape shape;
- 
-	b2FixtureDef groundFixtureDef;
-	groundFixtureDef.density = 100;
-	
-	//set Colliding
-	groundFixtureDef.filter.categoryBits = GROUND;
-	groundFixtureDef.filter.maskBits = CANNON | BULLET;
-
-	b2Vec2 border[ maxHillPoints ];
-	
-	int prevIndex = 0;
-	int count = 0;
-	for(int i = 1 ; i < borderVerticesCount-1 ; ++i) {    
-		if( borderPoints[i].x - borderPoints[prevIndex].x > 50 )
-		{
-			border[count].Set( (borderPoints[i].x)/PTM_RATIO , (borderPoints[i].y)/PTM_RATIO ) ;    
-			prevIndex=i;
-			count++;
-		}
-	}
-	
-	shape.CreateChain( border , count );
-
-	groundFixtureDef.shape = &shape;
+	groundFixtureDef.shape = &groundShape;
 	groundBody->CreateFixture(&groundFixtureDef);
 
 }
 
 // TEXTURE
-
-void Ground::setTexture() {
-
-	Color4F bgColor = randomBrightColor();
-	cocos2d::Texture2D::TexParams params = {GL_LINEAR, GL_LINEAR, GL_REPEAT,  GL_REPEAT};
-	
-	Texture2D * texture = createTexture(bgColor, 512.0 , 512.0 , 6);
-	
-	textureSprite = Sprite::createWithTexture( texture );
-	textureSprite->getTexture()->setTexParameters(params);
-	textureSprite->retain();
-	
-}
 
 Texture2D * Ground::createTexture( Color4F bgColor, float textureWidth, float textureHeight, int nStripes ){
 
@@ -449,26 +216,4 @@ Color4F Ground::randomBrightColor()
 			return ccc4FFromccc4B(randomColor);
 		}        
 	}
-}
-
-// GETTERS SETTERS
-
-void Ground::setOffsetX( int offset )
-{
-	if( (offsetX + offset) <  hillPoints[0].x ) this->offsetX = hillPoints[0].x;
-	else if( (offsetX + offset) > hillPoints[ maxHillPoints - 10 ].x ) this->offsetX = hillPoints[ maxHillPoints - 10 ].x;
-	else this->offsetX = offset;
-}
-
-
-void Ground::setOffsetY( int offset )
-{
-	if( (offsetY + offset) <  -250 ) this->offsetY = -250;
-	else if( (offsetY + offset) > 1000 ) this->offsetY = 1000;
-	else this->offsetY = offset;
-}
-
-void Ground::setOffsetXTexture( int offset )
-{
-	this->offsetXTexture += offset;
 }

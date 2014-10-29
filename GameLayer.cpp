@@ -51,13 +51,14 @@ void GameLayer::initBox2D(){
 }
 
 void GameLayer::initGround(){
+	
 	ground = new Ground(this, m_world);
-	ground->initGround();
+	ground->initGround( Point(100,0) , Point(winSize.width-100, winSize.height/6) );
 }
 
 void GameLayer::initCannon(){
 	cannon = new Cannon(this, m_world);
-	cannon->createCannon( b2Vec2( 5 , 20 ) );
+	cannon->createCannon( b2Vec2( 0 , 2 ) );
 }
 
 void GameLayer::createBullet(){

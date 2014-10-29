@@ -15,28 +15,14 @@ private:
 	
 	Size winSize;
 	
-	// OFFSETS TODO!
-	int offsetX, offsetY, offsetXTexture, hillPointsCount;
-	
-	// USED TO DETERMINE HOW MUCH SHOULD BE SHOWN
-	int startPoint, endPoint, prevStartPoint, prevEndPoint;
-	
-	// USED TO DRAW TRIANGES
-	Point hillPoints[maxHillPoints];
-	Point borderPoints[maxHillPoints];
-	Point vertexPoints[maxVertexPoints];
-	Point textureCoords[maxVertexPoints];
-	int borderVerticesCount;
-	int hillVerticesCount;
-	
-	// CUSTOM COMMANDS FOR OPENGL
-	CustomCommand drawHillsCommand;
-	CustomCommand drawStripesCommand;
+	// GROUND SPRITE
+	Sprite * groundSprite;
 	
 	// B2GROUND BODY
 	b2Body * groundBody;
 	
 	// TEXTURE
+	CustomCommand drawStripesCommand;
 	Sprite * noiseSprite;
 	Sprite * textureSprite;
 	int nStripes;
@@ -53,47 +39,23 @@ public:
 		textureSprite = NULL;
 		groundBody = NULL;
 		noiseSprite = NULL;
-		
-		offsetX = 0;
-		offsetY = 0;
-		offsetXTexture = 0;
-		hillPointsCount = 0;
-		startPoint = 0;
-		endPoint = 0;
-		prevStartPoint = -1;
-		prevEndPoint = -1;
-		
+				
 	}
 	
 	//UPDATE
 	void update();
 	
 	//RANDOM GROUND GENERATION
-	void initGround();
-	void generateHills();
-	
-	//TRIANGLES
-	void setBounds();
-	void setVertex();
-	void setSimpleVertex();
-	void drawHills();
+	void initGround( Point bottomLeft , Point topRight );
 
 	//B2BODY
-	void setSimpleBox2DBody();
-	void setBox2DBody();
-	void drawBox2DGround();
+	void setBox2DBody( Point bottomLeft , Point topRight );
 	
 	//TEXTURING
-	void setTexture();
 	Color4F randomBrightColor();
 	Texture2D * createTexture( Color4F bgColor, float textureWidth, float textureHeight, int nStripes );
 	void drawTexture();
 	
-	//GETTERS SETTERS
-	void setOffsetX( int offset );
-	void setOffsetY( int offset );
-	void setOffsetXTexture( int offset );
-
 };
 
 #endif // __GROUND_H__
