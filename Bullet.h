@@ -10,6 +10,7 @@ class Bullet : public GameObject {
 	
 	private:
 
+		b2Body* ghostBody;
 		b2Body* bulletBody;
 		b2Body* explosionBody;
 
@@ -27,6 +28,7 @@ class Bullet : public GameObject {
 		Bullet( Layer * layer, b2World * world, float radius, float density, float worldStartX, float worldEndX, float perspectiveX ) 
 		: GameObject( layer, world , worldStartX, worldEndX, perspectiveX, new std::string("BULLET") ) {
 
+			ghostBody = NULL;
 			bulletBody = NULL;
 			bulletSprite = NULL;
 			explosionSprite = NULL;
@@ -54,6 +56,8 @@ class Bullet : public GameObject {
 		void createExplosionSprite();
 
 		bool updateSprites();
+		
+		void reduceBulletSpeed( float );
 
 		Sprite * getMainSprite();
 };

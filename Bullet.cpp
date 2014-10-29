@@ -14,6 +14,7 @@ void Bullet::createBullet( b2Vec2 startPoint , float scale ){
 	bulletDef.type = b2_dynamicBody;
 
 	bulletBody = m_world->CreateBody(&bulletDef);
+	ghostBody = m_world->CreateBody(&bulletDef);
 
 	b2CircleShape bulletShape;
 	bulletShape.m_radius = scale*m_radius; 
@@ -28,6 +29,10 @@ void Bullet::createBullet( b2Vec2 startPoint , float scale ){
 	bulletFixtureDef.shape = &bulletShape;
 	bulletBody->CreateFixture(&bulletFixtureDef);
 
+	//ghost doesn`t collide
+	bulletFixtureDef.filter.maskBits = 0;
+	ghostBody->CreateFixture(&bulletFixtureDef);
+
 	bulletSprite = cocos2d::Sprite::create("bullet.png",  cocos2d::CCRectMake(0, 0, 55, 56));
 	bulletSprite->setPosition( cocos2d::Vec2( (startX+0.0)*PTM_RATIO , (startY+0.0)*PTM_RATIO ) );
 	bulletSprite->setScale(scale);
@@ -39,15 +44,48 @@ void Bullet::createBullet( b2Vec2 startPoint , float scale ){
  
 Bullet::~Bullet() {
 	
-		for(int i = 0 ; i < shrapnels.size(); i++)
-			delete shrapnels[i];
+	if( bulletBody != NULL ) m_world->DestroyBody( bulletBody );
+	if( ghostBody != NULL ) m_world->DestroyBody( ghostBody );
+	if( bulletSprite != NULL ) layer->removeChild( bulletSprite );
+	
+	for(int i = 0 ; i < shrapnels.size(); i++)
+		delete shrapnels[i];
 		
-		shrapnels.clear();
+	shrapnels.clear();
 }
 
 void Bullet::shoot(b2Vec2 direction, float power){
 	if( bulletBody != NULL )
-		bulletBody->ApplyLinearImpulse( b2Vec2(-power*direction.x, -power*direction.y), bulletBody->GetWorldCenter(), NULL );
+	{
+		
+		// MAX POWER IS WHEN MAX HEIGHT IS IN PERSPECTIVEX POINT
+		// SO MAX DISTANCE IS 2*PERSPECTIVEX
+		
+		float angle = atan2f(direction.y,direction.x)+M_PI;
+		float desiredV0 = sqrtf( (2*perspectiveX/PTM_RATIO)*10.0/sinf(2*angle) );
+		float desiredForce = bulletBody->GetMass()*desiredV0;
+		
+		direction.Normalize();
+		
+		bulletBody->ApplyLinearImpulse( b2Vec2(-desiredForce*direction.x, -desiredForce*direction.y), bulletBody->GetWorldCenter(), NULL );
+
+		//same thing for ghost
+		ghostBody->ApplyLinearImpulse( b2Vec2(-desiredForce*direction.x, -desiredForce*direction.y), bulletBody->GetWorldCenter(), NULL );
+		
+		float v0 = bulletBody->GetLinearVelocity().Length();
+		
+		float distance = ( v0*v0*sinf( 2*angle) )/10.0;
+
+		
+		g_screenLog->log( LL_INFO , "mass = %f% ", bulletBody->GetMass()  );
+		g_screenLog->log( LL_INFO , "v0 = %f% ", v0  );
+		g_screenLog->log( LL_INFO , "Angle = %f%", angle*RADTODEG );
+		g_screenLog->log( LL_INFO , "Distance = %f%", distance );
+		g_screenLog->log( LL_INFO , "It is %f% of world length",  distance*PTM_RATIO/(worldEndX-worldStartX) );
+		g_screenLog->log( LL_INFO , "desiredV0 = %f%",  desiredV0 );
+		g_screenLog->log( LL_INFO , "desiredF = %f%",  desiredForce );
+		
+	}
 }
 
 void Bullet::explode(){
@@ -72,9 +110,13 @@ void Bullet::explode(){
 	
 	createExplosionSprite();
 	
-	m_world->DestroyBody( bulletBody );
+	if( bulletBody != NULL ) m_world->DestroyBody( bulletBody );
+	if( ghostBody != NULL ) m_world->DestroyBody( ghostBody );
+	if( bulletSprite != NULL ) layer->removeChild( bulletSprite );
 	
-	layer->removeChild( bulletSprite );
+	bulletBody = NULL;
+	ghostBody = NULL;
+	bulletSprite = NULL;
 	
 	explosionFramesCounter=0;
 
@@ -149,13 +191,39 @@ bool Bullet::updateSprites(){
 			float perspectiveFactor = getPerspectiveFactor( bulletBody->GetPosition().x * PTM_RATIO );
 			bulletSprite->setScale( perspectiveFactor * scale );
 			
-			//setDamping
-			bulletBody->ApplyLinearImpulse( (1-perspectiveFactor)*b2Vec2( -0.05, -0.05 ), bulletBody->GetWorldCenter(), NULL );
+			//realistic perspective body movement
+			reduceBulletSpeed( perspectiveFactor );
+
 		}
 	}
 
 	return true;
 };
+
+void Bullet::reduceBulletSpeed( float perspectiveFactor )
+{
+	float minVelocity = 1.0;
+	if( bulletBody->GetLinearVelocity().Length() <= minVelocity ){
+			
+		g_screenLog->log( LL_INFO , " !Minimum bullet speed reached ", bulletBody->GetMass()  );
+		return;
+	}
+	
+	//get velocity direction
+	b2Vec2 normalizedVelocityVector = bulletBody->GetLinearVelocity();
+	normalizedVelocityVector.Normalize();
+	
+	//get velocity values
+	float currentVelocity = ghostBody->GetLinearVelocity().Length();
+	float desiredVelocity = perspectiveFactor*currentVelocity;
+	
+	//calculate force needed to set desired speed
+	float neededForce = ghostBody->GetMass()*(desiredVelocity-currentVelocity);
+	
+	//apply counter impulse
+	bulletBody->ApplyForce( neededForce*normalizedVelocityVector, bulletBody->GetWorldCenter(), NULL );	
+
+}
 
 Sprite * Bullet::getMainSprite(){
 	return bulletSprite;
