@@ -33,6 +33,18 @@ void Cloud::createCloud( Point startPosition ){
 };
 	
 void Cloud::updateSprites(){
+
+	for( int i = 0 ; i < spriteCount ; i++ )
+	{
+		Point currentPosition = cloudSprites[i]->getPosition();
+		if( currentPosition.x > worldEndX + 100 )
+			currentPosition.x = worldStartX - 100;
+		if( currentPosition.y < 200 )
+			currentPosition.y += 2;
+		
+		cloudSprites[i]->setPosition( currentPosition.x+baseMoveSpeed, currentPosition.y + (-1+rand()%3) );		
+	}
+
 };
 
 void Cloud::reduceCloudSpeed( float ){

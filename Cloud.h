@@ -15,6 +15,7 @@ private:
 	Point cloudBottomLeft[MAX_CLOUD_SPRITES];
 	Point cloudTopRight[MAX_CLOUD_SPRITES];
 	int spriteCount;
+	int baseMoveSpeed;
 	
 public:
 	
@@ -24,6 +25,9 @@ public:
 		//NULLIFY clouds
 		for( int i = 0; i < MAX_CLOUD_SPRITES ; i++ )
 			cloudSprites[i] = NULL;
+			
+		//SET BASE SPEED
+		baseMoveSpeed = 1 + rand()%3;
 	}
 	
 	void generateRandomCloud( Point startPosition);

@@ -70,12 +70,12 @@ void GameLayer::initGround(){
 void GameLayer::generateClouds(){
 	
 	//random number of clouds
-	int cloudsCount = 2+rand()%3;
+	int cloudsCount = 2+rand()%6;
 	
 	for(int i = 0 ; i < cloudsCount ; i++ )
 	{
 		Cloud * cloud = new Cloud( this, m_world, worldStartX, worldEndX, perspectiveX );
-		cloud->createCloud( Point( rand()%(int)winSize.width, 200+(rand()%(int)(winSize.height-200)) ) );
+		cloud->createCloud( Point( rand()%(int)winSize.width, 200+(rand()%(int)(winSize.height-400)) ) );
 		clouds.push_back(cloud);
 	}
 }
@@ -137,6 +137,12 @@ void GameLayer::tick(float dt){
 	if( cannon != NULL ){
 		cannon->updateSprites();
 		cannon->rotateBarrel( directionPoint );
+	}
+	
+	//Update clouds
+	for(int i = 0; i < clouds.size(); i++)
+	{
+		clouds[i]->updateSprites();
 	}
 	
 	//Explode bullets
