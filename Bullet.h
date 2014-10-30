@@ -15,6 +15,8 @@ class Bullet : public GameObject {
 		b2Body* explosionBody;
 
 		Sprite * bulletSprite;
+		
+		SpriteBatchNode * explosionBath;
 		Sprite * explosionSprite;
 	
 		bool follow;
@@ -33,6 +35,7 @@ class Bullet : public GameObject {
 			bulletBody = NULL;
 			bulletSprite = NULL;
 			explosionSprite = NULL;
+			explosionBath = NULL;
 
 			m_radius = radius;
 			m_density = density;

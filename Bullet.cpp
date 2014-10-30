@@ -47,6 +47,7 @@ Bullet::~Bullet() {
 	if( bulletBody != NULL ) m_world->DestroyBody( bulletBody );
 	if( ghostBody != NULL ) m_world->DestroyBody( ghostBody );
 	if( bulletSprite != NULL ) layer->removeChild( bulletSprite );
+	if( explosionBath != NULL ) layer->removeChild( explosionSprite );
 	
 	for(int i = 0 ; i < shrapnels.size(); i++)
 		delete shrapnels[i];
@@ -139,13 +140,30 @@ void Bullet::createExplosionSprite()
 				
 	explosionBody->CreateFixture(&explosionFixtureDef);
 
-	explosionSprite = cocos2d::Sprite::create("explosion.png",  cocos2d::CCRectMake(0, 0, 100, 100));
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("explotion.plist");
+	explosionBath=SpriteBatchNode::create("explotion.png");
+	layer->addChild(explosionBath);
+
+	explosionSprite=Sprite::createWithSpriteFrameName("explotion_01.png");
+	auto animation=Animation::create();
+
+	for(int i=1;i<=3;i++)
+	{
+		char szName[100]={0};
+		sprintf(szName,"explotion_0%d.png",i);
+		animation->addSpriteFrame(SpriteFrameCache::getInstance()->spriteFrameByName(szName));
+	}
+
+	animation->setDelayPerUnit(0.1f); 
 	explosionSprite->setPosition( cocos2d::Vec2( (bulletBody->GetPosition().x+0.0)*PTM_RATIO , (bulletBody->GetPosition().y+0.0)*PTM_RATIO ) );
-	layer->addChild( explosionSprite , 1 );
+	
+	explosionSprite->runAction(  CCAnimate::create(animation) ); 
+	explosionBath->addChild(explosionSprite);
 	
 	explosionBody->SetUserData(this);
 	
 	layer->runAction(cocos2d::CCFollow::create(explosionSprite,  Rect(worldStartX*layer->getScale(), worldStartX*layer->getScale(), worldEndX*layer->getScale() , worldEndX*layer->getScale() ) ));
+
 }
 
 bool Bullet::updateSprites(){
@@ -155,7 +173,7 @@ bool Bullet::updateSprites(){
 		explosionFramesCounter++;	
 
 		if( explosionFramesCounter > 100 ){
-			layer->removeChild( explosionSprite );
+			layer->removeChild( explosionBath );
 			m_world->DestroyBody( explosionBody );
 			return false;
 		}
