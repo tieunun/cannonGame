@@ -70,12 +70,12 @@ void GameLayer::initGround(){
 void GameLayer::generateClouds(){
 	
 	//random number of clouds
-	int cloudsCount = 2+rand()%6;
+	int cloudsCount = 3+rand()%7;
 	
 	for(int i = 0 ; i < cloudsCount ; i++ )
 	{
 		Cloud * cloud = new Cloud( this, m_world, worldStartX, worldEndX, perspectiveX );
-		cloud->createCloud( Point( rand()%(int)winSize.width, 200+(rand()%(int)(winSize.height-400)) ) );
+		cloud->createCloud( Point( -worldEndX/3+rand()%(int)(1.3*(int)worldEndX), 200+(rand()%(int)(winSize.height-200)) ) );
 		clouds.push_back(cloud);
 	}
 }

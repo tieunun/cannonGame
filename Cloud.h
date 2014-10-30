@@ -33,15 +33,17 @@ public:
 		baseMoveSpeed = 1.5 + (rand()%15)/10;
 	}
 	
-	void generateRandomCloud();
+	void generateRandomCloud( Point startPosition );
 
 	void createCloud( Point startPosition );
 
 	~Cloud();
+	
+	void disposeCloud();
 		
 	void updateSprites();
 	
-	void reduceCloudSpeed( float );
+	float getCloudPerspectiveFactor( float );
 	
 };
 
