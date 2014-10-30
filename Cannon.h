@@ -2,12 +2,16 @@
 #define __CANNON_H__
 
 #include "GameObject.h"
+#include "Soldier.h"
 
 using namespace cocos2d;
 
 class Cannon : public GameObject {
 	
 	private:
+	
+		Soldier * commander;
+		Soldier * soldier;
 	
 		b2Body* m_cannonWheel;
 		b2Body* m_cannonFrame;	
@@ -27,6 +31,10 @@ class Cannon : public GameObject {
 	
 		Cannon(  cocos2d::Layer * layer, b2World * world, float worldStartX, float worldEndX, float perspectiveX ) 
 		: GameObject( layer, world, worldStartX, worldEndX, perspectiveX, new std::string("CANNON") )  {
+			
+			soldier = NULL;
+			commander = NULL;
+			
 			m_cannonWheel = NULL;
 			m_cannonFrame = NULL;	
 			m_cannonHolder = NULL;
@@ -42,6 +50,10 @@ class Cannon : public GameObject {
 		}
 	
 		void createCannon( b2Vec2 startPoint, float scale );
+		
+		void createSoldiers();
+		
+		void resetSoldiers();
 		
 		void moveByVector( b2Vec2 position );
 		

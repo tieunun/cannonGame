@@ -97,6 +97,8 @@ void Cannon::createCannon( b2Vec2 startPoint , float scale ){
 	m_cannonWheelJoint = (b2RevoluteJoint*)m_world->CreateJoint( &revoluteJointDef );
 	
 	moveByVector( startPoint );
+	
+	createSoldiers();
 }
 
 void Cannon::moveByVector( b2Vec2 position )
@@ -106,6 +108,31 @@ void Cannon::moveByVector( b2Vec2 position )
 	m_cannonWheel->SetTransform( b2Vec2(position.x + m_cannonWheel->GetPosition().x , position.y + m_cannonWheel->GetPosition().y) , m_cannonWheel->GetAngle() );
 }
 
+void Cannon::createSoldiers()
+{
+
+	if( soldier != NULL )
+		delete soldier;
+		
+	soldier = new Soldier( layer, m_world, worldStartX, worldEndX, perspectiveX );
+	soldier->createSoldier( 2*scale );
+
+	if( commander != NULL )
+		delete commander;
+		
+	commander = new Soldier( layer, m_world, worldStartX, worldEndX, perspectiveX );
+	commander->createSoldier( 2*scale );
+	
+
+	resetSoldiers();
+	
+}
+
+void Cannon::resetSoldiers(){
+	if(commander) commander->moveToPosition( b2Vec2( m_cannonBarrel->GetPosition().x + 3 , 0 ) );
+	if(soldier) soldier->moveToPosition( m_cannonFrame->GetPosition() );
+}
+
 void Cannon::rotateBarrel( b2Vec2 clickedPoint ){
 
 	float bodyAngle = m_cannonBarrelJoint->GetJointAngle() + 10 * DEGTORAD;
@@ -113,7 +140,7 @@ void Cannon::rotateBarrel( b2Vec2 clickedPoint ){
 	float desiredAngle = atan2f( -toTarget.x, toTarget.y ) + M_PI/2;
 	if( desiredAngle > 90 * DEGTORAD ) desiredAngle = 90 * DEGTORAD;
 	if( desiredAngle < -20 * DEGTORAD ) desiredAngle = -20 * DEGTORAD;
-	float nextAngle = bodyAngle + (float)m_cannonBarrelJoint->GetJointSpeed() / 5.0;
+	float nextAngle = bodyAngle + (float)m_cannonBarrelJoint->GetJointSpeed() / 3.0;
 
 	totalRotation = desiredAngle - nextAngle;
 
@@ -121,14 +148,17 @@ void Cannon::rotateBarrel( b2Vec2 clickedPoint ){
 	while ( totalRotation >  180 * DEGTORAD ) totalRotation -= 360 * DEGTORAD;
 	
 	m_cannonBarrelJoint->EnableMotor(true);
-	m_cannonBarrelJoint->SetMaxMotorTorque(scale*2000);
-	m_cannonBarrelJoint->SetMotorSpeed( totalRotation < 0 ? -1 : 3 );
+	m_cannonBarrelJoint->SetMaxMotorTorque(scale*250);
+	m_cannonBarrelJoint->SetMotorSpeed( totalRotation < 0 ? -1 : 1 );
 }
 
 void Cannon::shoot()
 {
-	b2Vec2 toTarget = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(scale*11,0) ) ;
-	m_cannonFrame->ApplyLinearImpulse( b2Vec2(50*toTarget.x,50*toTarget.y), m_cannonFrame->GetWorldCenter(), NULL );
+	if(soldier) soldier->moveToPosition( b2Vec2(m_cannonFrame->GetPosition().x - 3 , 0 ) );
+
+	if(commander) commander->moveToPosition( b2Vec2(m_cannonBarrel->GetPosition().x , 0 ) );
+//	b2Vec2 toTarget = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(scale*11,0) ) ;
+//	m_cannonFrame->ApplyLinearImpulse( b2Vec2(50*toTarget.x,50*toTarget.y), m_cannonFrame->GetWorldCenter(), NULL );
 }
 
 b2Vec2 Cannon::GetShootingDirection(){
@@ -146,6 +176,9 @@ float Cannon::GetAngle(){
 }
 
 void Cannon::updateSprites(){
+	
+	if( soldier ) soldier->updateSprites();
+	if( commander ) commander->updateSprites();
 				
 	if(m_cannonBarrel == NULL || m_cannonFrame == NULL || m_cannonWheel == NULL ) return;
 	

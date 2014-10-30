@@ -118,7 +118,7 @@ void GameLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, coco
 	
 	if( location.x <= 300 )
 	{
-		//cannon->shoot();
+		cannon->shoot();
 		createBullet();
 	}
 }
@@ -156,6 +156,7 @@ void GameLayer::tick(float dt){
 			
 			this->runAction( Follow::create( cannon->getMainSprite() ,  Rect(worldStartX*this->getScale(), worldStartX*this->getScale(), worldEndX*this->getScale() , worldEndX*this->getScale() ) ));
 	
+			if(cannon) cannon->resetSoldiers();
 		}
 	}
 	

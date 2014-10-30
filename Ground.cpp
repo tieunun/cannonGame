@@ -24,7 +24,7 @@ void Ground::initGround( Point bottomLeft , Point topRight ){
 	groundSprite = Sprite::create( "bg.png" , Rect(bottomLeft.x , bottomLeft.y , topRight.x , topRight.y ) );
 	groundSprite->getTexture()->setTexParameters(params);
 	
-	layer->addChild(groundSprite);
+	layer->addChild(groundSprite, 5);
 	
 	this->setBox2DBody( bottomLeft , topRight );
 	
