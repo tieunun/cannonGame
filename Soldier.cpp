@@ -26,7 +26,7 @@ void Soldier::createSoldier( float scale ){
 	soldierFixtureDef.shape = &soldierShape;
 	soldierBody->CreateFixture(&soldierFixtureDef);
 
-	soldierSprite = cocos2d::Sprite::create("bg.png",  cocos2d::CCRectMake(0, 0, 1*PTM_RATIO , 1.6*PTM_RATIO));
+	soldierSprite = cocos2d::Sprite::create("soldier.png",  cocos2d::CCRectMake(0, 0, 1*PTM_RATIO , 1.6*PTM_RATIO));
 	soldierSprite->setPosition( cocos2d::Vec2( 2*PTM_RATIO , 2*PTM_RATIO ) );
 	soldierSprite->setScale(scale);
 	layer->addChild( soldierSprite , 10 );
@@ -35,7 +35,16 @@ void Soldier::createSoldier( float scale ){
 
 void Soldier::moveToPosition( b2Vec2 position ){
 	this->desiredPosition = position;
+	
+	b2Vec2 currentPosition = soldierBody->GetPosition();
+	if(desiredPosition.x - currentPosition.x < 0) flipSoldier();
+			
 };
+
+void Soldier::flipSoldier()
+{
+	soldierSprite->setScaleX( -1*soldierSprite->getScaleX() );
+}
 
 void Soldier::updateSprites(){
 	
@@ -63,6 +72,7 @@ void Soldier::moveSoldier(){
 			//float desiredForce = soldierBody->GetMass()*desiredV0;
 			
 			float desiredVelocity = desiredPosition.x - currentPosition.x;
+			if( desiredVelocity > 3.0 ) desiredVelocity = 3.0;
 			
 			//soldierBody->ApplyLinearImpulse( 2*desiredForce*b2Vec2(direction.x,0) ,  soldierBody->GetWorldCenter() , NULL );
 			

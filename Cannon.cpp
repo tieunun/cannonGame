@@ -133,6 +133,10 @@ void Cannon::resetSoldiers(){
 	if(soldier) soldier->moveToPosition( m_cannonFrame->GetPosition() );
 }
 
+void Cannon::soldierToWheel(){
+	if(soldier) soldier->moveToPosition( m_cannonWheel->GetPosition() );
+}
+
 void Cannon::rotateBarrel( b2Vec2 clickedPoint ){
 
 	float bodyAngle = m_cannonBarrelJoint->GetJointAngle() + 10 * DEGTORAD;
@@ -155,8 +159,7 @@ void Cannon::rotateBarrel( b2Vec2 clickedPoint ){
 void Cannon::shoot()
 {
 	if(soldier) soldier->moveToPosition( b2Vec2(m_cannonFrame->GetPosition().x - 3 , 0 ) );
-
-	if(commander) commander->moveToPosition( b2Vec2(m_cannonBarrel->GetPosition().x , 0 ) );
+	if(commander) commander->flipSoldier();
 //	b2Vec2 toTarget = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(scale*11,0) ) ;
 //	m_cannonFrame->ApplyLinearImpulse( b2Vec2(50*toTarget.x,50*toTarget.y), m_cannonFrame->GetWorldCenter(), NULL );
 }

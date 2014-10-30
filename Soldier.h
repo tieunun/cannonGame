@@ -32,6 +32,8 @@ public:
 	void updateSprites();
 	
 	void moveSoldier( );
+	
+	void flipSoldier();
 
 	
 };

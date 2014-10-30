@@ -106,8 +106,10 @@ void GameLayer::onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, coco
 		location = Director::getInstance()->convertToGL(location);
 		
 		if( location.x > 300 )
+		{
+			cannon->soldierToWheel();
 			directionPoint.Set( location.x/PTM_RATIO , location.y/PTM_RATIO );
-	
+		}
 	}		
 }
 
@@ -121,6 +123,7 @@ void GameLayer::onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, coco
 		cannon->shoot();
 		createBullet();
 	}
+	else cannon->resetSoldiers();
 }
 
 void GameLayer::tick(float dt){

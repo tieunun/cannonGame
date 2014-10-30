@@ -55,6 +55,8 @@ class Cannon : public GameObject {
 		
 		void resetSoldiers();
 		
+		void soldierToWheel();
+		
 		void moveByVector( b2Vec2 position );
 		
 		void rotateBarrel( b2Vec2 clickedPoint );
