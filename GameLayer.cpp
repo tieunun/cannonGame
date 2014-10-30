@@ -21,7 +21,7 @@ bool GameLayer::init()
 	winSize = Director::getInstance()->getVisibleSize();
 
 	worldStartX = 0;
-	worldEndX = 4*winSize.width/3;
+	worldEndX = 5*winSize.width/3;
 	perspectiveX = (3*winSize.width)/4;
 
 	if ( !Layer::init() ) return false;
@@ -34,6 +34,9 @@ bool GameLayer::init()
 
 	//CREATE GROUND
 	initGround();
+	
+	//GENERATE CLOUDS
+	generateClouds();
 	
 	//CREATE CANNON
 	initCannon();
@@ -61,6 +64,20 @@ void GameLayer::initGround(){
 	
 	ground = new Ground(this, m_world, worldStartX, worldEndX, perspectiveX );
 	ground->initGround( Point( worldStartX ,0) , Point( worldEndX, winSize.height/6) );
+	
+}
+
+void GameLayer::generateClouds(){
+	
+	//random number of clouds
+	int cloudsCount = 2+rand()%3;
+	
+	for(int i = 0 ; i < cloudsCount ; i++ )
+	{
+		Cloud * cloud = new Cloud( this, m_world, worldStartX, worldEndX, perspectiveX );
+		cloud->createCloud( Point( rand()%(int)winSize.width, 200+(rand()%(int)(winSize.height-200)) ) );
+		clouds.push_back(cloud);
+	}
 }
 
 void GameLayer::initCannon(){

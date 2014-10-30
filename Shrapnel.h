@@ -11,9 +11,12 @@ private:
 
 	float m_blastPower;
 	float m_density;
+	bool active;
 	
 public:
 
+
+	b2Body* ghostBody;
 	b2Body* shrapnelBody;
 	cocos2d::Sprite * shrapnelSprite;
 	
@@ -22,7 +25,10 @@ public:
 	{
 		m_density = density;
 		m_blastPower = blastPower;
+	
+		active = true;
 		
+		ghostBody = NULL;
 		shrapnelBody = NULL;
 		shrapnelSprite = NULL;
 	}
@@ -32,6 +38,10 @@ public:
 	~Shrapnel();
 		
 	void updateSprites();
+	
+	void reduceShrapnelSpeed( float );
+	
+	void dissapear();
 };
 
 #endif // __SHRAPNEL_H__

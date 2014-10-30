@@ -93,12 +93,13 @@ void Bullet::explode(){
 	b2Vec2 center = bulletBody->GetWorldCenter();
 	float blastPower = 90000000.0;
 		
-	int numRays = 30;
+	int numRays = 10;
 	for (int i = 0; i < numRays; i++) {
-		float angle = (i / (float)numRays) * 360 * DEGTORAD;
+		float angle = ((i / (float)numRays)+ rand()%30 ) * 360 * DEGTORAD;
 		b2Vec2 rayDir( sinf(angle), cosf(angle) );
 
 		Shrapnel * s = new Shrapnel(layer, m_world, blastPower, 100, worldStartX, worldEndX, perspectiveX );
+		s->setScale(scale);
 		s->createShrapnel( center, rayDir );
 		shrapnels.push_back(s);
 	}
@@ -200,7 +201,7 @@ void Bullet::reduceBulletSpeed( float perspectiveFactor )
 	float minVelocity = 5.0;
 	if( bulletBody->GetLinearVelocity().Length() <= minVelocity ){
 			
-		g_screenLog->log( LL_INFO , " !Minimum bullet speed reached ", bulletBody->GetMass()  );
+		g_screenLog->log( LL_INFO , " !Minimum bullet speed reached " );
 		return;
 	}
 	

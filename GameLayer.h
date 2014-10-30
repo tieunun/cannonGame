@@ -8,6 +8,7 @@
 #include "Bullet.h"
 #include "BulletContactListener.h"
 #include "ScreenLog.h"
+#include "Cloud.h"
 
 using namespace cocos2d;
 
@@ -29,6 +30,7 @@ private:
     Cannon * cannon;
 
 	std::vector<Bullet*> bullets;
+	std::vector<Cloud*> clouds;
 
 	BulletContactListener bulletContactListenerInstance;
 	
@@ -46,6 +48,8 @@ public:
 	void initBox2D();
 	
 	void initGround();
+	
+	void generateClouds();
 	
 	void initCannon();
 	
