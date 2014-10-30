@@ -11,11 +11,14 @@ class Cloud : public GameObject {
 
 private:
 
+	Point startPosition;
+	
 	cocos2d::Sprite * cloudSprites[MAX_CLOUD_SPRITES];
 	Point cloudBottomLeft[MAX_CLOUD_SPRITES];
 	Point cloudTopRight[MAX_CLOUD_SPRITES];
 	int spriteCount;
 	int baseMoveSpeed;
+	int cloudWidth, cloudHeight;
 	
 public:
 	
@@ -27,10 +30,10 @@ public:
 			cloudSprites[i] = NULL;
 			
 		//SET BASE SPEED
-		baseMoveSpeed = 1 + rand()%3;
+		baseMoveSpeed = 1.5 + (rand()%15)/10;
 	}
 	
-	void generateRandomCloud( Point startPosition);
+	void generateRandomCloud();
 
 	void createCloud( Point startPosition );
 
