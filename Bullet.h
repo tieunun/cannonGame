@@ -17,6 +17,7 @@ class Bullet : public GameObject {
 		Sprite * bulletSprite;
 		Sprite * explosionSprite;
 	
+		bool follow;
 		float m_radius, m_density ;
 				
 	public:
@@ -42,6 +43,8 @@ class Bullet : public GameObject {
 
 			startX = 0.0;
 			startY = 0.0;
+			
+			follow = false;
 
 		}
 
