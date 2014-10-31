@@ -9,6 +9,7 @@
 #include "BulletContactListener.h"
 #include "ScreenLog.h"
 #include "Cloud.h"
+#include "Enemy.h"
 
 using namespace cocos2d;
 
@@ -17,7 +18,7 @@ class GameLayer : public cocos2d::Layer
 		
 private:
 
-	float worldStartX, worldEndX, perspectiveX;
+	float worldStartX, worldEndX, worldHeight, perspectiveX;
 
 	b2Vec2 directionPoint;
 	
@@ -32,6 +33,10 @@ private:
 	std::vector<Bullet*> bullets;
 	std::vector<Cloud*> clouds;
 
+	std::vector<Enemy*> enemies;
+
+	Sprite * background;
+
 	BulletContactListener bulletContactListenerInstance;
 	
 	float globalScale;
@@ -45,6 +50,8 @@ public:
 
 	bool init();
     
+	void initBackground();
+	
 	void initBox2D();
 	
 	void initGround();
@@ -52,6 +59,8 @@ public:
 	void generateClouds();
 	
 	void initCannon();
+	
+	void generateEnemies();
 	
 	void createBullet();
 	

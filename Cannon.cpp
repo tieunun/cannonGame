@@ -13,7 +13,7 @@ void Cannon::createCannon( b2Vec2 startPoint , float scale ){
 	
 	//set Colliding
 	cannonFixtureDef.filter.categoryBits = CANNON;
-	cannonFixtureDef.filter.maskBits = GROUND | BULLET;
+	cannonFixtureDef.filter.maskBits = GROUND ;
 
 	//Create cannon barrel
 	cannonDef.position.Set( scale*13.5, scale*7.0);

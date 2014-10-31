@@ -46,10 +46,10 @@ void Cloud::updateSprites(){
 		Point currentPosition = cloudSprites[i]->getPosition();
 		
 		//KILL this cloud and GENERATE NEW ONE
-		if( currentPosition.x > worldEndX - 50 )
+		if( currentPosition.x > worldEndX + 100 )
 		{
 			disposeCloud();
-			generateRandomCloud( Point( worldStartX-300 , startPosition.y + rand() % cloudHeight ) );
+			generateRandomCloud( Point( worldStartX-300 , startPosition.y  ) );
 			return;
 		}
 		if( currentPosition.y < 100 + perspectiveFactor*200 )

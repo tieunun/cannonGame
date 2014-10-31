@@ -136,7 +136,7 @@ void Bullet::createExplosionSprite()
 
 	//set Colliding
 	explosionFixtureDef.filter.categoryBits = BULLET;
-	explosionFixtureDef.filter.maskBits = GROUND ;
+	explosionFixtureDef.filter.maskBits = GROUND | ENEMY;
 				
 	explosionBody->CreateFixture(&explosionFixtureDef);
 
@@ -172,7 +172,7 @@ bool Bullet::updateSprites(){
 		
 		explosionFramesCounter++;	
 
-		if( explosionFramesCounter > 100 ){
+		if( explosionFramesCounter > 30 ){
 			layer->removeChild( explosionBath );
 			m_world->DestroyBody( explosionBody );
 			return false;

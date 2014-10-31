@@ -16,18 +16,23 @@ bool GameLayer::init()
 	ground = NULL;
 	m_world = NULL;
 	cannon = NULL;
+	background = NULL;
 	
 	//SET WIN SIZE
 	winSize = Director::getInstance()->getVisibleSize();
 
 	worldStartX = 0;
 	worldEndX = 5*winSize.width/3;
+	worldHeight = worldEndX;
 	perspectiveX = (3*winSize.width)/4;
 
 	if ( !Layer::init() ) return false;
 
 	directionPoint.Set( 100, 100 );
 	globalScale = 0.5;
+
+	//INIT BACKGROUND
+	initBackground();
 
 	//INIT BOX2D
 	initBox2D();
@@ -40,6 +45,9 @@ bool GameLayer::init()
 	
 	//CREATE CANNON
 	initCannon();
+	
+	//GENERATE ENEMIES
+	generateEnemies();
 
 	this->setTouchEnabled(true);
 	
@@ -60,6 +68,23 @@ void GameLayer::initBox2D(){
 
 }
 
+void GameLayer::initBackground(){
+	if(background){
+		this->removeChild(background);
+		background = NULL;
+	}
+	
+	Texture2D::TexParams params = {GL_LINEAR, GL_LINEAR, GL_REPEAT,  GL_REPEAT};
+	
+	background = Sprite::create("bg.png",  Rect(0, 0, worldEndX, worldHeight));
+	
+	background->getTexture()->setTexParameters(params);
+	background->setPosition( worldEndX/2, worldHeight/4-50 );
+	
+	this->addChild( background , -5 );
+
+}
+	
 void GameLayer::initGround(){
 	
 	ground = new Ground(this, m_world, worldStartX, worldEndX, perspectiveX );
@@ -79,6 +104,19 @@ void GameLayer::generateClouds(){
 		clouds.push_back(cloud);
 	}
 }
+
+void GameLayer::generateEnemies(){
+	
+	int enemiesCount = 1;
+	
+	for(int i = 0 ; i < enemiesCount ; i++ )
+	{
+		Enemy * enemy = new Enemy( this, m_world, worldStartX, worldEndX, perspectiveX );
+		enemy->createEnemy( 2*globalScale );
+		enemies.push_back(enemy);
+	}
+}
+
 
 void GameLayer::initCannon(){
 
@@ -140,6 +178,12 @@ void GameLayer::tick(float dt){
 	if( cannon != NULL ){
 		cannon->updateSprites();
 		cannon->rotateBarrel( directionPoint );
+	}
+
+	//Update enemies
+	for(int i = 0; i < enemies.size(); i++)
+	{
+		enemies[i]->updateSprites();
 	}
 	
 	//Update clouds

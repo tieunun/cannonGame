@@ -49,7 +49,7 @@ void Ground::setBox2DBody( Point bottomLeft , Point topRight ) {
 	groundFixtureDef.density = 1.0;
 	groundFixtureDef.friction = 0.3;
 	groundFixtureDef.filter.categoryBits = GROUND;
-	groundFixtureDef.filter.maskBits = CANNON | BULLET;
+	groundFixtureDef.filter.maskBits = CANNON | BULLET | SHRAPNEL | ENEMY;
 
 	groundBody = m_world->CreateBody( &groundDef );
 	
