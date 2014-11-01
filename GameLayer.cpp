@@ -100,7 +100,7 @@ void GameLayer::generateClouds(){
 	for(int i = 0 ; i < cloudsCount ; i++ )
 	{
 		Cloud * cloud = new Cloud( this, m_world, worldStartX, worldEndX, perspectiveX );
-		cloud->createCloud( Point( -worldEndX/3+rand()%(int)(1.3*(int)worldEndX), 200+(rand()%(int)(winSize.height-200)) ) );
+		cloud->createCloud( Point( -worldEndX/3+rand()%(int)(1.3*(int)worldEndX), 300+(rand()%(int)(winSize.height-200)) ) );
 		clouds.push_back(cloud);
 	}
 }
@@ -128,7 +128,7 @@ void GameLayer::initCannon(){
 void GameLayer::createBullet(){
 
 
-	Bullet * bullet = new Bullet(this, m_world, 0.5 , 1, worldStartX, worldEndX, perspectiveX );
+	Bullet * bullet = new Bullet(this, m_world, 1 , 1, worldStartX, worldEndX, perspectiveX );
 	bullet->createBullet( cannon->GetBarrelExit(),  globalScale  );
 	bullet->shoot( cannon->GetShootingDirection() , 1 );
 	

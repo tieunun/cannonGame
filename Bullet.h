@@ -21,6 +21,7 @@ class Bullet : public GameObject {
 	
 		bool follow;
 		float m_radius, m_density ;
+		float bulletScale;
 				
 	public:
 
@@ -44,6 +45,7 @@ class Bullet : public GameObject {
 			exploded = false;
 			explosionFramesCounter=0;
 
+			bulletScale = 1;
 			startX = 0.0;
 			startY = 0.0;
 			

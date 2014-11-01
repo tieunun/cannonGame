@@ -35,7 +35,10 @@ void Bullet::createBullet( b2Vec2 startPoint , float scale ){
 
 	bulletSprite = cocos2d::Sprite::create("bullet.png",  cocos2d::CCRectMake(0, 0, 55, 56));
 	bulletSprite->setPosition( cocos2d::Vec2( (startX+0.0)*PTM_RATIO , (startY+0.0)*PTM_RATIO ) );
-	bulletSprite->setScale(scale);
+	
+	//scale to match box2d body
+	bulletScale = (scale*m_radius*PTM_RATIO)/55;
+	bulletSprite->setScale( bulletScale );
 	layer->addChild( bulletSprite , 2 );
 	
 	bulletBody->SetUserData(this);
@@ -157,6 +160,7 @@ void Bullet::createExplosionSprite()
 	animation->setDelayPerUnit(0.1f); 
 	explosionSprite->setPosition( cocos2d::Vec2( (bulletBody->GetPosition().x+0.0)*PTM_RATIO , (bulletBody->GetPosition().y+0.0)*PTM_RATIO ) );
 	
+	explosionSprite->setScale( 2*bulletSprite->getScale() );
 	explosionSprite->runAction(  CCAnimate::create(animation) ); 
 	explosionBath->addChild(explosionSprite);
 	
@@ -210,7 +214,7 @@ bool Bullet::updateSprites(){
 			
 			//setPerspective
 			float perspectiveFactor = getPerspectiveFactor( bulletBody->GetPosition().x * PTM_RATIO );
-			bulletSprite->setScale( perspectiveFactor * scale );
+			bulletSprite->setScale( perspectiveFactor * bulletScale );
 			
 			//realistic perspective body movement
 			reduceBulletSpeed( perspectiveFactor );
