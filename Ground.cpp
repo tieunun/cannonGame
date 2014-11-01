@@ -21,7 +21,7 @@ void Ground::initGround( Point bottomLeft , Point topRight ){
 	
 	//Texture2D * texture = createTexture(bgColor, 512.0 , 512.0 , 6);
 	
-	groundSprite = Sprite::create( "bg.png" , Rect(bottomLeft.x , bottomLeft.y , topRight.x , topRight.y ) );
+	groundSprite = Sprite::create( "ground.png" , Rect(bottomLeft.x , bottomLeft.y , topRight.x , topRight.y ) );
 	groundSprite->getTexture()->setTexParameters(params);
 	
 	layer->addChild(groundSprite, 5);

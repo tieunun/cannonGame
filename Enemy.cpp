@@ -98,12 +98,45 @@ void Enemy::updateSprites(){
 
 	//setPerspective
 	float perspectiveFactor = getPerspectiveFactor( enemyBody->GetPosition().x * PTM_RATIO );
-	enemySprite->setScale( perspectiveFactor * scale );
-
+	
+	scaleEnemyPerspective(perspectiveFactor);
 	//realistic perspective body movement
 	reduceEnemySpeed( perspectiveFactor );
 };
 
+void Enemy::scaleEnemyPerspective( float perspectiveFactor )
+{
+	enemySprite->setScale( perspectiveFactor * scale );
+	
+	b2Vec2 bodyPosition = enemyBody->GetPosition();
+
+	//TODO scale enemy box2d body
+	if(enemyBody){
+		m_world->DestroyBody( enemyBody );
+		enemyBody = NULL;
+	}
+	
+	b2BodyDef enemyDef;
+	enemyDef.position.Set( bodyPosition.x , bodyPosition.y );
+	enemyDef.type = b2_dynamicBody;
+
+	enemyBody = m_world->CreateBody(&enemyDef);
+	
+	b2PolygonShape enemyShape;
+	enemyShape.SetAsBox( perspectiveFactor*0.5 , perspectiveFactor*0.8 );
+
+	b2FixtureDef enemyFixtureDef;
+	enemyFixtureDef.density = 1;
+	enemyFixtureDef.friction = 0.3;
+
+	//set Colliding
+	enemyFixtureDef.filter.categoryBits = ENEMY;
+	enemyFixtureDef.filter.maskBits = GROUND | SHRAPNEL | BULLET ;
+
+	enemyFixtureDef.shape = &enemyShape;
+	enemyBody->CreateFixture(&enemyFixtureDef);
+
+}
 
 void Enemy::reduceEnemySpeed( float perspectiveFactor )
 {

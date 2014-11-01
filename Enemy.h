@@ -37,6 +37,8 @@ public:
 
 	void disposeEnemy();
 	
+	void scaleEnemyPerspective( float );
+	
 	void reduceEnemySpeed( float );
 };
 

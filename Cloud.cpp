@@ -14,20 +14,18 @@ void Cloud::generateRandomCloud( Point startPosition ){
 	for( int i = 0 ; i < spriteCount ; i++ ){
 		
 		float spriteWidth = 0.6*cloudWidth + ( rand() % (int)(0.5*cloudWidth) ) ; 
-		float spriteHeight = 0.6*cloudHeight + ( rand() % (int)(0.5*cloudHeight) ) ; 
 		
-		float bLX = startPosition.x + rand() % (int)(0.7*cloudWidth);
-		float bLY = startPosition.y + rand() % (int)(0.7*cloudHeight);
+		float bLX = startPosition.x + rand() % (int)(cloudWidth);
+		float bLY = startPosition.y + rand() % (int)(0.3*cloudHeight);
 
 		cloudSprites[i] = Sprite::create("cloud.png", Rect( 0 , 0 , 400 , 400 ) ); 
-		cloudSprites[i]->setScaleX( spriteWidth/400 );
-		cloudSprites[i]->setScaleY( spriteHeight/400 );
+		cloudSprites[i]->setScale( spriteWidth/400 );
 
 		cloudSprites[i]->setPosition( bLX , bLY );
 	}
 	
 	for( int i = 0 ; i < spriteCount ; i++ )
-		layer->addChild( cloudSprites[i] , rand()%10 );
+		layer->addChild( cloudSprites[i] , -3+rand()%8 );
 }
 
 
@@ -57,8 +55,8 @@ void Cloud::updateSprites(){
 		
 		cloudSprites[i]->setPosition( currentPosition.x+perspectiveFactor*baseMoveSpeed, currentPosition.y + (1-perspectiveFactor)*(-0.25+(rand()%10)/30) );		
 		
-		if( cloudSprites[i]->getScaleX() > perspectiveFactor ) cloudSprites[i]->setScaleX( perspectiveFactor );
-		if( cloudSprites[i]->getScaleY() > perspectiveFactor ) cloudSprites[i]->setScaleY( perspectiveFactor );
+		if( cloudSprites[i]->getScale() > perspectiveFactor ) cloudSprites[i]->setScale( perspectiveFactor );
+		//if( cloudSprites[i]->getScaleY() > perspectiveFactor ) cloudSprites[i]->setScaleY( perspectiveFactor );
 	}
 
 };

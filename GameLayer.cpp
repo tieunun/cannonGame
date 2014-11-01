@@ -76,7 +76,7 @@ void GameLayer::initBackground(){
 	
 	Texture2D::TexParams params = {GL_LINEAR, GL_LINEAR, GL_REPEAT,  GL_REPEAT};
 	
-	background = Sprite::create("bg.png",  Rect(0, 0, worldEndX, worldHeight));
+	background = Sprite::create("sky.png",  Rect(0, 0, worldEndX, worldHeight));
 	
 	background->getTexture()->setTexParameters(params);
 	background->setPosition( worldEndX/2, worldHeight/4-50 );
