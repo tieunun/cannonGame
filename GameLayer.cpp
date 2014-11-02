@@ -17,6 +17,7 @@ bool GameLayer::init()
 	m_world = NULL;
 	cannon = NULL;
 	background = NULL;
+	backgroundLight = NULL;
 	
 	//SET WIN SIZE
 	winSize = Director::getInstance()->getVisibleSize();
@@ -81,7 +82,14 @@ void GameLayer::initBackground(){
 	background->getTexture()->setTexParameters(params);
 	background->setPosition( worldEndX/2, worldHeight/4-50 );
 	
-	this->addChild( background , -5 );
+	this->addChild( background , -50 );
+
+	backgroundLight = Sprite::create("sky2.png",  Rect(0, 0, worldEndX, 256));
+	
+	backgroundLight->getTexture()->setTexParameters(params);
+	backgroundLight->setPosition( worldEndX/2, 128 );
+	
+	this->addChild( backgroundLight , -50 );
 
 }
 	
@@ -95,12 +103,12 @@ void GameLayer::initGround(){
 void GameLayer::generateClouds(){
 	
 	//random number of clouds
-	int cloudsCount = 3+rand()%7;
+	int cloudsCount = 15;
 	
 	for(int i = 0 ; i < cloudsCount ; i++ )
 	{
 		Cloud * cloud = new Cloud( this, m_world, worldStartX, worldEndX, perspectiveX );
-		cloud->createCloud( Point( -worldEndX/3+rand()%(int)(1.3*(int)worldEndX), 300+(rand()%(int)(winSize.height-200)) ) );
+		cloud->createCloud( Point( -worldEndX/3+rand()%(int)(1.3*(int)worldEndX), 350+(rand()%(int)(winSize.height-200)) ) );
 		clouds.push_back(cloud);
 	}
 }
@@ -112,7 +120,7 @@ void GameLayer::generateEnemies(){
 	for(int i = 0 ; i < enemiesCount ; i++ )
 	{
 		Enemy * enemy = new Enemy( this, m_world, worldStartX, worldEndX, perspectiveX );
-		enemy->createEnemy( 2*globalScale );
+		enemy->createTank( 2*globalScale );
 		enemies.push_back(enemy);
 	}
 }
@@ -123,6 +131,8 @@ void GameLayer::initCannon(){
 
 	cannon = new Cannon(this, m_world, worldStartX, worldEndX, perspectiveX );
 	cannon->createCannon( b2Vec2( 2 , 2 ) , globalScale );
+	
+	if( ground ) cannon->createDistanceJoint( ground->getBody() );
 }
 
 void GameLayer::createBullet(){

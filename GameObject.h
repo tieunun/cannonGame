@@ -63,7 +63,7 @@ class GameObject
 			if( positionX <= perspectiveX ) return 1.0;
 			
 			// Simple linear function y = 1 - (poistionX-perspectiveX)/(worldEndX - perspectiveX);
-			float a = 1 / (worldEndX - perspectiveX);
+			float a = 0.8 / (worldEndX - perspectiveX);
 			float scale = 1 - a*(positionX - perspectiveX); 
 			
 			return scale;

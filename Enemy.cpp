@@ -37,6 +37,42 @@ void Enemy::createEnemy( float scale ){
 	flipEnemy();
 };
 
+void Enemy::createTank( float scale ){
+	
+	setScale(scale);
+
+	b2BodyDef enemyDef;
+	enemyDef.position.Set( worldEndX/PTM_RATIO - 5 , 2 );
+	enemyDef.type = b2_dynamicBody;
+
+	enemyBody = m_world->CreateBody(&enemyDef);
+	
+	b2PolygonShape enemyShape;
+	enemyShape.SetAsBox( 2.5 , 1.25 );
+
+	b2FixtureDef enemyFixtureDef;
+	enemyFixtureDef.density = 1;
+	enemyFixtureDef.friction = 0.3;
+
+	//set Colliding
+	enemyFixtureDef.filter.categoryBits = ENEMY;
+	enemyFixtureDef.filter.maskBits = GROUND | SHRAPNEL | BULLET ;
+
+	enemyFixtureDef.shape = &enemyShape;
+	enemyBody->CreateFixture(&enemyFixtureDef);
+
+	enemySprite = cocos2d::Sprite::create("czolg.png",  cocos2d::CCRectMake(0, 0, 285 , 96));
+	enemySprite->setPosition( cocos2d::Vec2( 2*PTM_RATIO , 2*PTM_RATIO ) );
+	enemySprite->setScale(scale);
+	
+	this->desiredPosition = b2Vec2( worldStartX + 15 , 0 );
+	
+	layer->addChild( enemySprite , 10 );
+		
+	flipEnemy();
+};
+
+
 void Enemy::moveToPosition( b2Vec2 position ){
 	this->desiredPosition = position;
 	
@@ -62,11 +98,11 @@ void Enemy::moveEnemy(){
 		//if( desiredVelocity > 2.0 ) desiredVelocity = 2.0;
 		
 		float frictionForce = enemyBody->GetMass()*10.0*0.3;
-		float force = enemyBody->GetMass()*desiredVelocity;
+		float force = enemyBody->GetMass()*desiredVelocity + frictionForce;
 		
 //		enemyBody->SetLinearVelocity( b2Vec2( desiredVelocity , 0 ) );
 
-		enemyBody->ApplyForce( b2Vec2( 6*frictionForce*direction.x , 0 ) , enemyBody->GetWorldCenter() , NULL );
+		enemyBody->ApplyForce( b2Vec2( 5*force*direction.x , 0 ) , enemyBody->GetWorldCenter() , NULL );
 	}
 }
 
@@ -91,8 +127,6 @@ void Enemy::updateSprites(){
 		return;
 	}
 	
-	moveEnemy();
-	
 	enemySprite->setPosition( cocos2d::ccp( enemyBody->GetPosition().x * PTM_RATIO , enemyBody->GetPosition().y * PTM_RATIO) );
 	enemySprite->setRotation( -1 * CC_RADIANS_TO_DEGREES( enemyBody->GetAngle()) );
 
@@ -100,6 +134,9 @@ void Enemy::updateSprites(){
 	float perspectiveFactor = getPerspectiveFactor( enemyBody->GetPosition().x * PTM_RATIO );
 	
 	scaleEnemyPerspective(perspectiveFactor);
+	
+	moveEnemy();
+	
 	//realistic perspective body movement
 	reduceEnemySpeed( perspectiveFactor );
 };

@@ -39,7 +39,7 @@ void Bullet::createBullet( b2Vec2 startPoint , float scale ){
 	//scale to match box2d body
 	bulletScale = (scale*m_radius*PTM_RATIO)/55;
 	bulletSprite->setScale( bulletScale );
-	layer->addChild( bulletSprite , 2 );
+	layer->addChild( bulletSprite , 1 );
 	
 	bulletBody->SetUserData(this);
 	

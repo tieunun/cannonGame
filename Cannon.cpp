@@ -108,6 +108,26 @@ void Cannon::moveByVector( b2Vec2 position )
 	m_cannonWheel->SetTransform( b2Vec2(position.x + m_cannonWheel->GetPosition().x , position.y + m_cannonWheel->GetPosition().y) , m_cannonWheel->GetAngle() );
 }
 
+void Cannon::createDistanceJoint( b2Body * body )
+{
+	//Join Frame and Body
+	b2DistanceJointDef distanceJointDef;
+	distanceJointDef.bodyA = m_cannonWheel;
+	distanceJointDef.bodyB = body;
+	distanceJointDef.collideConnected = true;
+	distanceJointDef.localAnchorA.Set(0,0);
+	
+	b2Vec2 bodyLocalCannonPosition =body->GetLocalPoint( m_cannonWheel->GetWorldCenter() );
+	
+	distanceJointDef.localAnchorB.Set( bodyLocalCannonPosition.x , 0 );
+	distanceJointDef.length = 3;
+	
+	distanceJointDef.frequencyHz = 10.0f;
+	distanceJointDef.dampingRatio = 0.7f;
+	
+	m_world->CreateJoint( &distanceJointDef );
+}
+
 void Cannon::createSoldiers()
 {
 
@@ -160,8 +180,8 @@ void Cannon::shoot()
 {
 	if(soldier) soldier->moveToPosition( b2Vec2(m_cannonFrame->GetPosition().x - 3 , 0 ) );
 	if(commander) commander->flipSoldier();
-//	b2Vec2 toTarget = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(scale*11,0) ) ;
-//	m_cannonFrame->ApplyLinearImpulse( b2Vec2(50*toTarget.x,50*toTarget.y), m_cannonFrame->GetWorldCenter(), NULL );
+	b2Vec2 toTarget = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(scale*11,0) ) ;
+	m_cannonFrame->ApplyLinearImpulse( b2Vec2(50*toTarget.x,50*toTarget.y), m_cannonFrame->GetWorldCenter(), NULL );
 }
 
 b2Vec2 Cannon::GetShootingDirection(){

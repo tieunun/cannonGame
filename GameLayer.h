@@ -36,6 +36,7 @@ private:
 	std::vector<Enemy*> enemies;
 
 	Sprite * background;
+	Sprite * backgroundLight;
 
 	BulletContactListener bulletContactListenerInstance;
 	

@@ -27,6 +27,8 @@ public:
 	
 	void createEnemy( float );
 	
+	void createTank( float );
+	
 	void moveToPosition( b2Vec2 );
 		
 	void updateSprites();

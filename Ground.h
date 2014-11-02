@@ -7,6 +7,8 @@
 #define hillSegmentWidth  10
 #define maxVertexPoints 5000
 
+#define maxMountains 10
+
 using namespace cocos2d;
 
 class Ground : public GameObject , public Node{
@@ -14,6 +16,9 @@ class Ground : public GameObject , public Node{
 private:
 	
 	Size winSize;
+	
+	// MOUNTAINS
+	Sprite * mountains[maxMountains];
 	
 	// GROUND SPRITE
 	Sprite * groundSprite;
@@ -39,6 +44,10 @@ public:
 		textureSprite = NULL;
 		groundBody = NULL;
 		noiseSprite = NULL;
+		
+		for( int i = 0 ; i < maxMountains ; i++ ){
+			mountains[i] = NULL;
+		}
 				
 	}
 	
@@ -51,11 +60,14 @@ public:
 	//B2BODY
 	void setBox2DBody( Point bottomLeft , Point topRight );
 	
+	void generateMountains();
+	
 	//TEXTURING
 	Color4F randomBrightColor();
 	Texture2D * createTexture( Color4F bgColor, float textureWidth, float textureHeight, int nStripes );
 	void drawTexture();
 	
+	b2Body * getBody(){ return groundBody; };
 };
 
 #endif // __GROUND_H__

@@ -11,6 +11,8 @@ void Cloud::generateRandomCloud( Point startPosition ){
 	cloudWidth = 100 + rand() % 300;
 	cloudHeight = 50 + rand() % 150;
 	
+	int zOrder = -5+rand()%5;
+	
 	for( int i = 0 ; i < spriteCount ; i++ ){
 		
 		float spriteWidth = 0.6*cloudWidth + ( rand() % (int)(0.5*cloudWidth) ) ; 
@@ -25,7 +27,7 @@ void Cloud::generateRandomCloud( Point startPosition ){
 	}
 	
 	for( int i = 0 ; i < spriteCount ; i++ )
-		layer->addChild( cloudSprites[i] , -3+rand()%8 );
+		layer->addChild( cloudSprites[i] , zOrder );
 }
 
 
@@ -67,7 +69,7 @@ float Cloud::getCloudPerspectiveFactor( float positionX ){
 	//Before worldStart point
 	if( positionX <= worldStartX ) return 1.0;
 	
-	float a = 0.8 / (worldEndX - worldStartX);
+	float a = 0.9 / (worldEndX - worldStartX);
 	float scale = 1 - a*(positionX - worldStartX); 
 	
 	return scale;

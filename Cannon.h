@@ -51,6 +51,8 @@ class Cannon : public GameObject {
 	
 		void createCannon( b2Vec2 startPoint, float scale );
 		
+		void createDistanceJoint( b2Body * bodyToJoint );
+		
 		void createSoldiers();
 		
 		void resetSoldiers();

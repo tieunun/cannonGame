@@ -13,7 +13,6 @@ void Ground::update(){
 }
 
 // GROUND GENERATE
-
 void Ground::initGround( Point bottomLeft , Point topRight ){
 		
 	//Color4F bgColor = randomBrightColor();
@@ -21,12 +20,43 @@ void Ground::initGround( Point bottomLeft , Point topRight ){
 	
 	//Texture2D * texture = createTexture(bgColor, 512.0 , 512.0 , 6);
 	
-	groundSprite = Sprite::create( "ground.png" , Rect(bottomLeft.x , bottomLeft.y , topRight.x , topRight.y ) );
+	groundSprite = Sprite::create( "ground.png" , Rect(bottomLeft.x , bottomLeft.y , topRight.x , topRight.y ));//0 , 0 , 128 , 128 ) );
 	groundSprite->getTexture()->setTexParameters(params);
 	
 	layer->addChild(groundSprite, 5);
 	
 	this->setBox2DBody( bottomLeft , topRight );
+	
+	generateMountains();
+}
+
+void Ground::generateMountains(){
+	
+	float mountainScale = -0.8+(rand()%4)/10;
+	float bigStep = perspectiveX/(maxMountains/3);
+	float smallStep = (worldEndX-perspectiveX)/(2*maxMountains/3);
+	float mountainX = 0;
+	
+	for(int i = 0; i < maxMountains ; i++)
+	{
+		
+		float mountainScale = 0.5+(rand()%3)*0.25;
+		float pF = getPerspectiveFactor( mountainX );
+		
+		mountains[i] = Sprite::create( "hill.png" , Rect(0 , 0 , 1000 , 1000 ) );
+		mountains[i]->setPosition( mountainX , 50 );
+		
+		mountains[i]->setScale( pF );
+		
+		layer->addChild(mountains[i], -5+rand()%5);
+		
+		if( mountainX < perspectiveX ){
+			mountainX += bigStep ;
+		}
+		else{
+			mountainX += smallStep;
+		}
+	}
 	
 }
 

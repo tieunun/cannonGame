@@ -26,9 +26,10 @@ void Soldier::createSoldier( float scale ){
 	soldierFixtureDef.shape = &soldierShape;
 	soldierBody->CreateFixture(&soldierFixtureDef);
 
-	soldierSprite = cocos2d::Sprite::create("soldier.png",  cocos2d::CCRectMake(0, 0, 1*PTM_RATIO , 1.6*PTM_RATIO));
+	soldierSprite = cocos2d::Sprite::create("soldier.png",  cocos2d::CCRectMake(0, 0, 533 , 966));
 	soldierSprite->setPosition( cocos2d::Vec2( 2*PTM_RATIO , 2*PTM_RATIO ) );
-	soldierSprite->setScale(scale);
+	float ratio = 1.6*PTM_RATIO/966;
+	soldierSprite->setScale(scale*ratio);
 	layer->addChild( soldierSprite , 10 );
 		
 };
