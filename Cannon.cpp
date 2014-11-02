@@ -149,12 +149,21 @@ void Cannon::createSoldiers()
 }
 
 void Cannon::resetSoldiers(){
-	if(commander) commander->moveToPosition( b2Vec2( m_cannonBarrel->GetPosition().x + 3 , 0 ) );
-	if(soldier) soldier->moveToPosition( m_cannonFrame->GetPosition() );
+	if(commander){
+		commander->moveToPosition( b2Vec2( m_cannonBarrel->GetPosition().x + 3 , 0 ) );
+		commander->lookRight();
+	}
+	if(soldier){
+		soldier->moveToPosition( m_cannonFrame->GetPosition() );
+		soldier->lookRight();
+	}
 }
 
 void Cannon::soldierToWheel(){
-	if(soldier) soldier->moveToPosition( m_cannonWheel->GetPosition() );
+	if(!soldier) return;
+	
+	soldier->moveToPosition( m_cannonWheel->GetPosition() );
+	soldier->lookRight();
 }
 
 void Cannon::rotateBarrel( b2Vec2 clickedPoint ){
@@ -178,8 +187,9 @@ void Cannon::rotateBarrel( b2Vec2 clickedPoint ){
 
 void Cannon::shoot()
 {
+	
 	if(soldier) soldier->moveToPosition( b2Vec2(m_cannonFrame->GetPosition().x - 3 , 0 ) );
-	if(commander) commander->flipSoldier();
+	if(commander) commander->lookLeft();
 	b2Vec2 toTarget = m_cannonBarrel->GetWorldCenter() - m_cannonBarrel->GetWorldPoint( b2Vec2(scale*11,0) ) ;
 	m_cannonFrame->ApplyLinearImpulse( b2Vec2(50*toTarget.x,50*toTarget.y), m_cannonFrame->GetWorldCenter(), NULL );
 }

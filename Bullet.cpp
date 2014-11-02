@@ -43,6 +43,7 @@ void Bullet::createBullet( b2Vec2 startPoint , float scale ){
 	
 	bulletBody->SetUserData(this);
 	
+	createExplosionSprite();
  }
  
 Bullet::~Bullet() {
@@ -91,7 +92,7 @@ void Bullet::explode(){
 
 	markedToExplode = false;
 	exploded = true;
-	
+
 	if( bulletBody == NULL ) return;
 
 	b2Vec2 center = bulletBody->GetWorldCenter();
@@ -118,31 +119,14 @@ void Bullet::explode(){
 	ghostBody = NULL;
 	bulletSprite = NULL;
 	
-	explosionFramesCounter=0;
 
 }
 
 void Bullet::createExplosionSprite()
 {
-	b2BodyDef explosionDef;
-	explosionDef.position.Set( bulletBody->GetPosition().x, bulletBody->GetPosition().y );
-	explosionDef.type = b2_staticBody;
 
-	explosionBody = m_world->CreateBody(&explosionDef);
-
-	b2CircleShape explosionShape;
-	explosionShape.m_radius = 5; 
-
-	b2FixtureDef explosionFixtureDef;
+	explosionFinished = false;
 	
-	explosionFixtureDef.shape = &explosionShape;
-
-	//set Colliding
-	explosionFixtureDef.filter.categoryBits = BULLET;
-	explosionFixtureDef.filter.maskBits = GROUND | ENEMY;
-				
-	explosionBody->CreateFixture(&explosionFixtureDef);
-
 	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("explotion.plist");
 	explosionBath=SpriteBatchNode::create("explotion.png");
 	layer->addChild(explosionBath);
@@ -161,69 +145,96 @@ void Bullet::createExplosionSprite()
 	explosionSprite->setPosition( cocos2d::Vec2( (bulletBody->GetPosition().x+0.0)*PTM_RATIO , (bulletBody->GetPosition().y+0.0)*PTM_RATIO ) );
 	
 	explosionSprite->setScale( 2*bulletSprite->getScale() );
-	explosionSprite->runAction(  CCAnimate::create(animation) ); 
+
+	auto callback = CallFunc::create( [this]() {
+		this->disposeExplosion();
+	});
+	
+	explosionSprite->runAction( Sequence::create( Animate::create(animation), callback, NULL ) ); 
+	 
 	explosionBath->addChild(explosionSprite);
 	
-	explosionBody->SetUserData(this);
+}
+
+
+void Bullet::disposeExplosion(){
 	
-	layer->runAction(cocos2d::CCFollow::create(explosionSprite,  Rect(worldStartX*layer->getScale(), worldStartX*layer->getScale(), worldEndX*layer->getScale() , worldEndX*layer->getScale() ) ));
+	g_screenLog->log( LL_INFO , " disposeExplosion" );
+	
+	if( explosionBath  ){
+		layer->removeChild( explosionBath );	
+		if( explosionSprite ) layer->removeChild( explosionSprite );
+
+		explosionBath = NULL;
+		explosionSprite = NULL;
+		
+		explosionFinished = true;
+	}
+	
 
 }
 
-bool Bullet::updateSprites(){
+bool Bullet::disposeBullet(){
 	
-	if(exploded ){
+	if( exploded )
+		if( explosionFinished ) return true;
 		
-		explosionFramesCounter++;	
-
-		if( explosionFramesCounter > 30 ){
-			layer->removeChild( explosionBath );
-			m_world->DestroyBody( explosionBody );
-			return false;
-		}
-		else{
-			
-			for( int i = 0 ; i < shrapnels.size() ; i++ )
-				shrapnels[i]->updateSprites();
-			
-		}
-	}	
-	else {
-		if( markedToExplode ){
-			explode();
-		}
-		else if( bulletBody->GetPosition().x * PTM_RATIO > worldEndX )
-		{
-			explode();
-		}
-		else{
+	return false;
 	
-			if(!follow)
-			{
-				//SET WIN SIZE
-				Size winSize = Director::getInstance()->getVisibleSize();
-				if( bulletBody->GetPosition().x * PTM_RATIO > winSize.width/2 || bulletBody->GetPosition().y * PTM_RATIO > winSize.height/2 )
-				{
-					follow = true;
-					layer->runAction(cocos2d::CCFollow::create(bulletSprite,  Rect(worldStartX*layer->getScale(), worldStartX*layer->getScale(), worldEndX*layer->getScale() , worldEndX*layer->getScale() ) ));
-				}
-			}
-			
-			bulletSprite->setPosition( cocos2d::ccp( bulletBody->GetPosition().x * PTM_RATIO , bulletBody->GetPosition().y * PTM_RATIO) );
-			bulletSprite->setRotation( -1 * CC_RADIANS_TO_DEGREES( bulletBody->GetAngle()) );
-			
-			//setPerspective
-			float perspectiveFactor = getPerspectiveFactor( bulletBody->GetPosition().x * PTM_RATIO );
-			bulletSprite->setScale( perspectiveFactor * bulletScale );
-			
-			//realistic perspective body movement
-			reduceBulletSpeed( perspectiveFactor );
+}
 
+bool Bullet::bodyOffScreen()
+{
+	if( bulletBody->GetPosition().x * PTM_RATIO > worldEndX ) return true;
+	if( bulletBody->GetPosition().x * PTM_RATIO < worldStartX ) return true;
+	return false;
+}
+
+void Bullet::setCamera(){
+	if(!follow)
+	{
+		//SET WIN SIZE
+		Size winSize = Director::getInstance()->getVisibleSize();
+		if( bulletBody->GetPosition().x * PTM_RATIO > winSize.width/2 || bulletBody->GetPosition().y * PTM_RATIO > winSize.height/2 )
+		{
+			follow = true;
+			layer->runAction(cocos2d::CCFollow::create(bulletSprite,  Rect(worldStartX*layer->getScale(), worldStartX*layer->getScale(), worldEndX*layer->getScale() , worldEndX*layer->getScale() ) ));
 		}
 	}
+	
+}
 
-	return true;
-};
+void Bullet::updateSprites(){
+
+	// If shrapnels exsist - update
+	for( int i = 0 ; i < shrapnels.size() ; i++ )
+		if(shrapnels[i]) shrapnels[i]->updateSprites();
+			
+	// If there is no body or sprite return
+	if( bulletBody == NULL || bulletSprite == NULL ) return;
+			
+	if( markedToExplode || bodyOffScreen() ){
+		explode();
+	}
+	else{
+	
+		//update CCFollow
+		setCamera();
+		
+		//update sprites
+		bulletSprite->setPosition( cocos2d::ccp( bulletBody->GetPosition().x * PTM_RATIO , bulletBody->GetPosition().y * PTM_RATIO) );
+		bulletSprite->setRotation( -1 * CC_RADIANS_TO_DEGREES( bulletBody->GetAngle()) );
+		
+		//setPerspective
+		float perspectiveFactor = getPerspectiveFactor( bulletBody->GetPosition().x * PTM_RATIO );
+		bulletSprite->setScale( perspectiveFactor * bulletScale );
+		
+		//realistic perspective body movement
+		reduceBulletSpeed( perspectiveFactor );
+
+	}
+
+}
 
 void Bullet::reduceBulletSpeed( float perspectiveFactor )
 {

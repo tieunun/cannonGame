@@ -206,7 +206,10 @@ void GameLayer::tick(float dt){
 	for(int i = 0; i < bullets.size(); i++)
 	{
 		Bullet * bullet = bullets[i];
-		if( !bullet->updateSprites() )
+		bullet->updateSprites();
+		
+		//bullet exploded and explosion finished
+		if( bullet->disposeBullet() )
 		{
 			bullets.erase(bullets.begin()+i);
 			delete bullet;

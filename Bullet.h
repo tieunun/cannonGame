@@ -12,14 +12,14 @@ class Bullet : public GameObject {
 
 		b2Body* ghostBody;
 		b2Body* bulletBody;
-		b2Body* explosionBody;
-
+		
 		Sprite * bulletSprite;
 		
 		SpriteBatchNode * explosionBath;
 		Sprite * explosionSprite;
 	
 		bool follow;
+		
 		float m_radius, m_density ;
 		float bulletScale;
 				
@@ -27,7 +27,7 @@ class Bullet : public GameObject {
 
 		int startX, startY, explosionFramesCounter;
 		std::vector <Shrapnel*> shrapnels;
-		bool exploded, markedToExplode;
+		bool exploded, markedToExplode, explosionFinished;
 			
 		Bullet( Layer * layer, b2World * world, float radius, float density, float worldStartX, float worldEndX, float perspectiveX ) 
 		: GameObject( layer, world , worldStartX, worldEndX, perspectiveX, new std::string("BULLET") ) {
@@ -57,13 +57,21 @@ class Bullet : public GameObject {
 
 		~Bullet();
 
+		void disposeExplosion();
+		
+		bool disposeBullet();
+
 		void shoot(b2Vec2 direction, float power);
 
 		void explode();
 
 		void createExplosionSprite();
 
-		bool updateSprites();
+		void updateSprites();
+		
+		void setCamera();
+		
+		bool bodyOffScreen();
 		
 		void reduceBulletSpeed( float );
 

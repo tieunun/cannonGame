@@ -35,16 +35,17 @@ void Soldier::createSoldier( float scale ){
 };
 
 void Soldier::moveToPosition( b2Vec2 position ){
-	this->desiredPosition = position;
-	
-	b2Vec2 currentPosition = soldierBody->GetPosition();
-	if(desiredPosition.x - currentPosition.x < 0) flipSoldier();
-			
+	this->desiredPosition = position;			
 };
 
-void Soldier::flipSoldier()
+void Soldier::lookRight()
 {
-	soldierSprite->setScaleX( -1*soldierSprite->getScaleX() );
+	soldierSprite->setFlipX( false );
+}
+
+void Soldier::lookLeft()
+{
+	soldierSprite->setFlipX( true );
 }
 
 void Soldier::updateSprites(){

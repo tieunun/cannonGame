@@ -33,7 +33,8 @@ public:
 	
 	void moveSoldier( );
 	
-	void flipSoldier();
+	void lookRight();
+	void lookLeft();
 
 	
 };
