@@ -35,12 +35,16 @@ private:
 
 	std::vector<Enemy*> enemies;
 
+	std::vector<Sprite*> trajectory;
+
 	Sprite * background;
 	Sprite * backgroundLight;
 
 	BulletContactListener bulletContactListenerInstance;
 	
 	float globalScale;
+
+	int trajectoryFrames;
 
 public:
 
@@ -64,6 +68,10 @@ public:
 	void generateEnemies();
 	
 	void createBullet();
+	
+	void resetTrajectory();
+
+	void addTrajectoryPoint( Point );
 	
 	void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
 

@@ -27,6 +27,8 @@ bool GameLayer::init()
 	worldHeight = worldEndX;
 	perspectiveX = (3*winSize.width)/4;
 
+	trajectoryFrames = 0;
+
 	if ( !Layer::init() ) return false;
 
 	directionPoint.Set( 100, 100 );
@@ -137,12 +139,51 @@ void GameLayer::initCannon(){
 
 void GameLayer::createBullet(){
 
+	resetTrajectory();
 
 	Bullet * bullet = new Bullet(this, m_world, 1 , 1, worldStartX, worldEndX, perspectiveX );
 	bullet->createBullet( cannon->GetBarrelExit(),  globalScale  );
 	bullet->shoot( cannon->GetShootingDirection() , 1 );
 	
 	bullets.push_back(bullet);
+
+}
+
+void GameLayer::resetTrajectory(){
+	
+	for(int i = 0; i < trajectory.size(); i++)
+	{
+		this->removeChild( trajectory[i] );
+		trajectory[i] = NULL;
+	}	
+	
+	trajectory.clear();
+	trajectoryFrames = 0;
+}
+
+void GameLayer::addTrajectoryPoint( Point p ){
+	
+	//Only add points far away from cannon
+	if( p.x < 500 ) return;
+	
+	//Trajectory point
+	Sprite * tP = Sprite::create("kolko.png",  Rect(0, 0, 50, 50));
+	tP->setPosition( p.x , p.y );
+	
+	float perspectiveScale = 1.0;
+	
+	//After perspective point
+	if( p.x > perspectiveX ){
+		float a = 0.8 / (worldEndX - perspectiveX);
+		perspectiveScale = 1 - a*(p.x - perspectiveX); 
+		
+	}
+	
+	tP->setScale( 0.2 * perspectiveScale );
+	
+	trajectory.push_back( tP );
+	
+	this->addChild( tP , 0 );
 
 }
 
@@ -208,6 +249,12 @@ void GameLayer::tick(float dt){
 		Bullet * bullet = bullets[i];
 		bullet->updateSprites();
 		
+		if( trajectoryFrames % 15 == 0 ){
+			trajectoryFrames = 0;
+			Sprite * bulletSprite = bullet->getMainSprite();
+			if( bulletSprite )	addTrajectoryPoint( bulletSprite->getPosition() );
+		}
+		
 		//bullet exploded and explosion finished
 		if( bullet->disposeBullet() )
 		{
@@ -219,5 +266,7 @@ void GameLayer::tick(float dt){
 			if(cannon) cannon->resetSoldiers();
 		}
 	}
+	
+	trajectoryFrames++;
 	
 }
